@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<!--
+  Полностью автономная страница: все стили, скрипты и словари внутри этого файла.
+  Внешние CSS, JS и данные не подключаются (работает offline из одного .html).
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Touch typing trainer — RU, EN, ES, IT</title>
+  <meta name="description" content="Free blind typing trainer in your browser: phrases in Russian, English, Spanish or Italian, QWERTY and JCUKEN layouts, key highlights, stats. No install required." />
+  <meta name="keywords" content="touch typing, blind typing, typing tutor, online keyboard trainer, QWERTY, JCUKEN, Russian English Spanish Italian typing" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Touch typing trainer — RU, EN, ES, IT" />
+  <meta property="og:description" content="Free blind typing trainer in browser: QWERTY and JCUKEN, RU/EN/ES/IT, stats. No install." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="ru_RU" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Touch typing trainer" />
+  <meta name="twitter:description" content="Blind typing in browser — RU/EN/ES/IT, QWERTY/JCUKEN, free." />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Тренажёр слепой печати",
+    "alternateName": "Blind typing trainer",
+    "description": "Онлайн-тренажёр слепой печати: русские и английские слова, QWERTY и ЙЦУКЕН.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Any",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "inLanguage": ["ru", "en", "es", "it"]
+  }
+  </script>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --key-bg: #2d3a4f;
+      --key-border: #3d4f6a;
+      --key-text: #e6edf3;
+      --key-dim: #8b9cb3;
+      --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, 0.15);
+      --home: #3fb950;
+      --home-soft: rgba(63, 185, 80, 0.2);
+      --radius: 6px;
+      --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--key-text);
+      font-family: var(--font);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .page-top-heading {
+      width: 100%;
+      margin-left: 0;
+      margin-right: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+
+    .page-top-heading h1 {
+      width: 100%;
+      text-align: left;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--key-dim);
+      font-size: 0.9rem;
+      width: 100%;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (min-width: 640px) {
+      .toolbar {
+        justify-content: space-between;
+      }
+    }
+
+    .toolbar-word-lang {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .toolbar label {
+      font-size: 0.85rem;
+      color: var(--key-dim);
+      margin-right: 0.25rem;
+    }
+
+    .seg {
+      display: inline-flex;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 3px;
+      border: 1px solid var(--key-border);
+    }
+
+    .seg button {
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.45rem 1rem;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--key-dim);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .seg button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .seg button:hover:not([aria-pressed="true"]) {
+      color: var(--key-text);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: var(--key-dim);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.home {
+      background: var(--home);
+    }
+
+    .keyboard-section {
+      width: 100%;
+      max-width: 920px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.65rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .keyboard-section-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--key-dim);
+    }
+
+    .keyboard-wrap {
+      width: 100%;
+      max-width: 920px;
+      background: var(--surface);
+      border: 1px solid var(--key-border);
+      border-radius: 12px;
+      padding: 1.25rem 1rem 1.5rem;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-family: var(--font);
+      font-size: 0.72rem;
+    }
+
+    .row {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
+
+    .key {
+      min-width: 2.35rem;
+      height: 2.6rem;
+      padding: 0 0.35rem;
+      background: linear-gradient(180deg, #354a66 0%, var(--key-bg) 100%);
+      border: 1px solid var(--key-border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--key-text);
+      user-select: none;
+      box-shadow: 0 2px 0 #1a2332;
+    }
+
+    .key.w-1 { min-width: 2.35rem; }
+    .key.w-1-5 { min-width: 3.2rem; }
+    .key.w-2 { min-width: 4.2rem; }
+    .key.w-2-5 { min-width: 5.5rem; }
+    .key.w-3 { min-width: 6.8rem; }
+    .key.w-4 { min-width: 9rem; }
+    .key.w-space { min-width: 18rem; flex: 1; max-width: 22rem; }
+
+    .key .main {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .key .sub {
+      font-size: 0.65rem;
+      color: var(--key-dim);
+      margin-top: 1px;
+    }
+
+    .key.home-pos {
+      border-color: var(--home);
+      box-shadow: 0 0 0 1px var(--home-soft), 0 2px 0 #1a2332;
+    }
+
+    .key.home-pos .main::after {
+      content: "";
+      display: block;
+      width: 4px;
+      height: 4px;
+      background: var(--home);
+      border-radius: 50%;
+      margin: 2px auto 0;
+    }
+
+    .key.active {
+      background: linear-gradient(180deg, #4a6fa8 0%, #3d5a8a 100%);
+      border-color: var(--accent);
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 #1a2332;
+    }
+
+    [data-layout="ru"] .key-en-only {
+      display: none;
+    }
+
+    [data-layout="en"] .key-ru-only {
+      display: none;
+    }
+
+    .practice-wrap {
+      width: 100%;
+      max-width: 920px;
+      background: var(--surface);
+      border: 1px solid var(--key-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .practice-wrap h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--key-dim);
+    }
+
+    #practice {
+      outline: none;
+      border: 2px dashed var(--key-border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      min-height: 4.5rem;
+      cursor: text;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    #practice:focus {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    #practice.error-flash {
+      animation: err 0.35s ease;
+    }
+
+    @keyframes err {
+      0%, 100% { border-color: var(--key-border); }
+      50% { border-color: #f85149; background: rgba(248, 81, 73, 0.12); }
+    }
+
+    .word-line {
+      font-family: var(--font);
+      font-size: clamp(1.5rem, 5vw, 2.25rem);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    /* одинаковый шрифт у букв и пробелов (без inline-block / NBSP) */
+    .word-line span {
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      font-style: inherit;
+      letter-spacing: inherit;
+      line-height: inherit;
+      vertical-align: baseline;
+    }
+
+    .word-line .ch-done {
+      color: var(--key-dim);
+    }
+
+    .word-line .ch-cur {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.1em 0.15em;
+      border-radius: 4px;
+    }
+
+    .word-line .ch-todo {
+      color: var(--key-text);
+      opacity: 0.45;
+    }
+
+    .word-line .word-hint {
+      cursor: help;
+      border-bottom: 1px dotted var(--key-dim);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .word-line .word-hint:hover {
+      border-bottom-color: var(--accent);
+    }
+
+    .bk-word-tooltip {
+      position: fixed;
+      z-index: 10000;
+      max-width: min(22rem, calc(100vw - 1.5rem));
+      padding: 0.65rem 0.85rem;
+      background: var(--surface);
+      border: 1px solid var(--key-border);
+      border-radius: var(--radius);
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.45;
+      color: var(--key-text);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+    }
+
+    .bk-word-tooltip strong {
+      color: var(--accent);
+      font-weight: 600;
+      margin-right: 0.35rem;
+    }
+
+    .session-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      margin-top: 1rem;
+      font-size: 0.88rem;
+      color: var(--key-dim);
+    }
+
+    .session-stats strong {
+      color: var(--key-text);
+    }
+
+    .done-msg {
+      margin-top: 0.75rem;
+      padding: 0.65rem 1rem;
+      background: var(--home-soft);
+      border: 1px solid var(--home);
+      border-radius: var(--radius);
+      color: var(--home);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .done-msg.visible {
+      display: block;
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.5rem 1.1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--key-border);
+      background: var(--key-bg);
+      color: var(--key-text);
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .stats-section {
+      width: 100%;
+      max-width: 920px;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--key-border);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
+    }
+
+    .stats-page-title {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--key-text);
+    }
+
+    .stats-global {
+      width: 100%;
+      max-width: 920px;
+      display: grid;
+      /* равные доли всей ширины (после gap), без фиксированных px */
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(0.5rem, 2vw, 1rem);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 720px) {
+      .stats-global {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 420px) {
+      .stats-global {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .stats-card {
+      background: var(--surface);
+      border: 1px solid var(--key-border);
+      border-radius: 10px;
+      padding: clamp(0.5rem, 2.5%, 1rem);
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .stats-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    .stats-card dl {
+      margin: 0;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .stats-card dt {
+      color: var(--key-dim);
+      font-size: 0.8rem;
+    }
+
+    .stats-card dd {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .history-wrap {
+      width: 100%;
+      max-width: 920px;
+      overflow-x: auto;
+    }
+
+    .history-wrap h3 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+    }
+
+    table.history {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    table.history th,
+    table.history td {
+      border: 1px solid var(--key-border);
+      padding: 0.4rem 0.5rem;
+      text-align: left;
+    }
+
+    table.history th {
+      background: var(--key-bg);
+      color: var(--key-dim);
+    }
+
+    .page-top {
+      position: relative;
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto 0.25rem;
+      padding-right: 0;
+    }
+
+    .page-top-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .page-top-main {
+      flex: 1 1 280px;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .ui-lang-wrap {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.35rem;
+      margin-left: auto;
+    }
+
+    @media (min-width: 640px) {
+      .page-top-inner {
+        flex-wrap: nowrap;
+        justify-content: space-between;
+      }
+      .page-top-main {
+        text-align: left;
+        padding-right: 1rem;
+      }
+      .ui-lang-wrap {
+        margin-top: 0.15rem;
+      }
+    }
+
+    .ui-lang-label {
+      font-size: 0.75rem;
+      color: var(--key-dim);
+      white-space: nowrap;
+    }
+
+    .ui-lang-select {
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.4rem 2rem 0.4rem 0.6rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--key-border);
+      background: var(--surface);
+      color: var(--key-text);
+      cursor: pointer;
+      min-width: 9rem;
+    }
+
+    .ui-lang-select:hover,
+    .ui-lang-select:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+
+    @media (max-width: 768px) {
+      .keyboard-wrap {
+        padding: 0.75rem 0.35rem;
+        overflow-x: auto;
+      }
+      .keyboard {
+        min-width: 680px;
+        font-size: 0.65rem;
+      }
+      .key {
+        min-width: 1.9rem;
+        height: 2.2rem;
+      }
+      .key.w-space { min-width: 12rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-top">
+    <div class="page-top-inner">
+      <div class="page-top-main">
+        <div class="page-top-heading">
+          <h1 id="i18n-h1">Слепая печать — тренажёр онлайн</h1>
+          <p class="subtitle" id="i18n-subtitle">
+            За раз нужно набрать <strong>от 5 до 10 слов</strong> (только русские или только английские), через пробел. Раскладка в системе должна совпадать с выбранным языком. Клавиатура ниже показывает подсказку по клавишам. Статистика — внизу страницы.
+          </p>
+        </div>
+      </div>
+      <div class="ui-lang-wrap">
+        <label for="ui-lang" class="ui-lang-label" id="i18n-ui-lang-label">Язык интерфейса</label>
+        <select id="ui-lang" class="ui-lang-select" aria-describedby="i18n-ui-lang-label">
+          <option value="ru">Русский</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="it">Italiano</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="practice-wrap">
+    <h2 id="i18n-practice-title">Тренировка</h2>
+    <div class="toolbar" style="margin-bottom: 1rem;">
+      <span class="toolbar-word-lang">
+        <label id="i18n-word-lang-label" for="train-ru">Язык слов</label>
+        <div class="seg" id="train-seg" role="group" aria-label="Язык тренировки">
+          <button type="button" id="train-ru" aria-pressed="true">Русские слова</button>
+          <button type="button" id="train-en" aria-pressed="false">Английские слова</button>
+          <button type="button" id="train-es" aria-pressed="false">Español</button>
+          <button type="button" id="train-it" aria-pressed="false">Italiano</button>
+        </div>
+      </span>
+      <button type="button" class="btn" id="btn-new-word">Новая фраза (5–10 слов)</button>
+    </div>
+    <div
+      id="practice"
+      tabindex="0"
+      role="application"
+      aria-label="Наберите фразу из слов"
+    >
+      <div class="word-line" id="word-line" aria-live="polite"></div>
+      <div id="bk-word-tooltip" class="bk-word-tooltip" hidden aria-hidden="true"></div>
+    </div>
+    <div class="session-stats" id="session-stats"></div>
+    <div class="done-msg" id="done-msg" role="status"></div>
+  </div>
+
+  <div class="legend" id="i18n-legend">
+    <span><i class="dot home"></i> Метки на F и J (А и О на русской раскладке)</span>
+  </div>
+
+  <section class="keyboard-section" aria-labelledby="i18n-keyboard-title">
+    <h2 class="keyboard-section-title" id="i18n-keyboard-title">Схема клавиатуры</h2>
+    <div class="keyboard-wrap" id="keyboard-wrap" data-layout="en">
+      <div class="keyboard" id="keyboard" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <section class="stats-section" id="stats-section">
+    <h2 class="stats-page-title" id="i18n-stats-title">Статистика</h2>
+    <div class="stats-global" id="stats-global"></div>
+    <div class="history-wrap">
+      <h3 id="i18n-history-heading">Последние 100 попыток</h3>
+      <table class="history" id="history-table" aria-label="История">
+        <thead>
+          <tr>
+            <th id="i18n-th-text">Текст</th>
+            <th id="i18n-th-lang">Язык</th>
+            <th id="i18n-th-time">Время</th>
+            <th id="i18n-th-wrong">Ошибок</th>
+            <th id="i18n-th-result">Результат</th>
+          </tr>
+        </thead>
+        <tbody id="history-body"></tbody>
+      </table>
+    </div>
+  </section>
+  <script>
+    (function () {
+      const LAYOUTS = {
+        en: {
+          rows: [
+            [
+              { w: "1", main: "`", sub: "~", code: "Backquote" },
+              { w: "1", main: "1", sub: "!", code: "Digit1" },
+              { w: "1", main: "2", sub: "@", code: "Digit2" },
+              { w: "1", main: "3", sub: "#", code: "Digit3" },
+              { w: "1", main: "4", sub: "$", code: "Digit4" },
+              { w: "1", main: "5", sub: "%", code: "Digit5" },
+              { w: "1", main: "6", sub: "^", code: "Digit6" },
+              { w: "1", main: "7", sub: "&", code: "Digit7" },
+              { w: "1", main: "8", sub: "*", code: "Digit8" },
+              { w: "1", main: "9", sub: "(", code: "Digit9" },
+              { w: "1", main: "0", sub: ")", code: "Digit0" },
+              { w: "1", main: "-", sub: "_", code: "Minus" },
+              { w: "1", main: "=", sub: "+", code: "Equal" },
+              { w: "2", main: "Backspace", code: "Backspace" },
+            ],
+            [
+              { w: "1-5", main: "Tab", code: "Tab" },
+              { w: "1", main: "Q", code: "KeyQ" },
+              { w: "1", main: "W", code: "KeyW" },
+              { w: "1", main: "E", code: "KeyE" },
+              { w: "1", main: "R", code: "KeyR" },
+              { w: "1", main: "T", code: "KeyT" },
+              { w: "1", main: "Y", code: "KeyY" },
+              { w: "1", main: "U", code: "KeyU" },
+              { w: "1", main: "I", code: "KeyI" },
+              { w: "1", main: "O", code: "KeyO" },
+              { w: "1", main: "P", code: "KeyP" },
+              { w: "1", main: "[", sub: "{", code: "BracketLeft" },
+              { w: "1", main: "]", sub: "}", code: "BracketRight" },
+              { w: "1-5", main: "\\", sub: "|", code: "Backslash" },
+            ],
+            [
+              { w: "2", main: "Caps", code: "CapsLock" },
+              { w: "1", main: "A", code: "KeyA" },
+              { w: "1", main: "S", code: "KeyS" },
+              { w: "1", main: "D", code: "KeyD" },
+              { w: "1", main: "F", code: "KeyF", home: true },
+              { w: "1", main: "G", code: "KeyG" },
+              { w: "1", main: "H", code: "KeyH" },
+              { w: "1", main: "J", code: "KeyJ", home: true },
+              { w: "1", main: "K", code: "KeyK" },
+              { w: "1", main: "L", code: "KeyL" },
+              { w: "1", main: ";", sub: ":", code: "Semicolon" },
+              { w: "1", main: "'", sub: '"', code: "Quote" },
+              { w: "2-5", main: "Enter", code: "Enter" },
+            ],
+            [
+              { w: "2-5", main: "Shift", code: "ShiftLeft" },
+              { w: "1", main: "Z", code: "KeyZ" },
+              { w: "1", main: "X", code: "KeyX" },
+              { w: "1", main: "C", code: "KeyC" },
+              { w: "1", main: "V", code: "KeyV" },
+              { w: "1", main: "B", code: "KeyB" },
+              { w: "1", main: "N", code: "KeyN" },
+              { w: "1", main: "M", code: "KeyM" },
+              { w: "1", main: ",", sub: "<", code: "Comma" },
+              { w: "1", main: ".", sub: ">", code: "Period" },
+              { w: "1", main: "/", sub: "?", code: "Slash" },
+              { w: "3", main: "Shift", code: "ShiftRight" },
+            ],
+            [
+              { w: "2", main: "Ctrl", code: "ControlLeft" },
+              { w: "1-5", main: "Win", code: "MetaLeft", enOnly: true },
+              { w: "1-5", main: "⌘", code: "MetaLeft", ruOnly: true },
+              { w: "1-5", main: "Alt", code: "AltLeft" },
+              { w: "space", main: "Space", code: "Space" },
+              { w: "1-5", main: "Alt", code: "AltRight" },
+              { w: "1-5", main: "Menu", code: "ContextMenu" },
+              { w: "2", main: "Ctrl", code: "ControlRight" },
+            ],
+          ],
+        },
+        ru: {
+          rows: [
+            [
+              { w: "1", main: "ё", sub: "Ё", code: "Backquote" },
+              { w: "1", main: "1", sub: "!", code: "Digit1" },
+              { w: "1", main: "2", sub: '"', code: "Digit2" },
+              { w: "1", main: "3", sub: "№", code: "Digit3" },
+              { w: "1", main: "4", sub: ";", code: "Digit4" },
+              { w: "1", main: "5", sub: "%", code: "Digit5" },
+              { w: "1", main: "6", sub: ":", code: "Digit6" },
+              { w: "1", main: "7", sub: "?", code: "Digit7" },
+              { w: "1", main: "8", sub: "*", code: "Digit8" },
+              { w: "1", main: "9", sub: "(", code: "Digit9" },
+              { w: "1", main: "0", sub: ")", code: "Digit0" },
+              { w: "1", main: "-", sub: "_", code: "Minus" },
+              { w: "1", main: "=", sub: "+", code: "Equal" },
+              { w: "2", main: "Backspace", code: "Backspace" },
+            ],
+            [
+              { w: "1-5", main: "Tab", code: "Tab" },
+              { w: "1", main: "й", code: "KeyQ" },
+              { w: "1", main: "ц", code: "KeyW" },
+              { w: "1", main: "у", code: "KeyE" },
+              { w: "1", main: "к", code: "KeyR" },
+              { w: "1", main: "е", code: "KeyT" },
+              { w: "1", main: "н", code: "KeyY" },
+              { w: "1", main: "г", code: "KeyU" },
+              { w: "1", main: "ш", code: "KeyI" },
+              { w: "1", main: "щ", code: "KeyO" },
+              { w: "1", main: "з", code: "KeyP" },
+              { w: "1", main: "х", sub: "Х", code: "BracketLeft" },
+              { w: "1", main: "ъ", sub: "Ъ", code: "BracketRight" },
+              { w: "1-5", main: "\\", sub: "/", code: "Backslash" },
+            ],
+            [
+              { w: "2", main: "Caps", code: "CapsLock" },
+              { w: "1", main: "ф", code: "KeyA" },
+              { w: "1", main: "ы", code: "KeyS" },
+              { w: "1", main: "в", code: "KeyD" },
+              { w: "1", main: "а", code: "KeyF", home: true },
+              { w: "1", main: "п", code: "KeyG" },
+              { w: "1", main: "р", code: "KeyH" },
+              { w: "1", main: "о", code: "KeyJ", home: true },
+              { w: "1", main: "л", code: "KeyK" },
+              { w: "1", main: "д", code: "KeyL" },
+              { w: "1", main: "ж", sub: "Ж", code: "Semicolon" },
+              { w: "1", main: "э", sub: "Э", code: "Quote" },
+              { w: "2-5", main: "Enter", code: "Enter" },
+            ],
+            [
+              { w: "2-5", main: "Shift", code: "ShiftLeft" },
+              { w: "1", main: "я", code: "KeyZ" },
+              { w: "1", main: "ч", code: "KeyX" },
+              { w: "1", main: "с", code: "KeyC" },
+              { w: "1", main: "м", code: "KeyV" },
+              { w: "1", main: "и", code: "KeyB" },
+              { w: "1", main: "т", code: "KeyN" },
+              { w: "1", main: "ь", code: "KeyM" },
+              { w: "1", main: "б", sub: "Б", code: "Comma" },
+              { w: "1", main: "ю", sub: "Ю", code: "Period" },
+              { w: "1", main: ".", sub: ",", code: "Slash" },
+              { w: "3", main: "Shift", code: "ShiftRight" },
+            ],
+            [
+              { w: "2", main: "Ctrl", code: "ControlLeft" },
+              { w: "1-5", main: "Win", code: "MetaLeft", enOnly: true },
+              { w: "1-5", main: "⌘", code: "MetaLeft", ruOnly: true },
+              { w: "1-5", main: "Alt", code: "AltLeft" },
+              { w: "space", main: "Пробел", code: "Space" },
+              { w: "1-5", main: "Alt", code: "AltRight" },
+              { w: "1-5", main: "Menu", code: "ContextMenu" },
+              { w: "2", main: "Ctrl", code: "ControlRight" },
+            ],
+          ],
+        },
+      };
+
+const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru":"слово","en":"word","es":"palabra","it":"parola"},{"ru":"мир","en":"world","es":"mundo","it":"mondo"},{"ru":"город","en":"city","es":"ciudad","it":"città"},{"ru":"вода","en":"water","es":"agua","it":"acqua"},{"ru":"солнце","en":"sun","es":"sol","it":"sole"},{"ru":"земля","en":"earth","es":"tierra","it":"terra"},{"ru":"небо","en":"sky","es":"cielo","it":"cielo"},{"ru":"день","en":"day","es":"día","it":"giorno"},{"ru":"ночь","en":"night","es":"noche","it":"notte"},{"ru":"время","en":"time","es":"tiempo","it":"tempo"},{"ru":"жизнь","en":"life","es":"vida","it":"vita"},{"ru":"человек","en":"person","es":"persona","it":"persona"},{"ru":"работа","en":"work","es":"trabajo","it":"lavoro"},{"ru":"семья","en":"family","es":"familia","it":"famiglia"},{"ru":"любовь","en":"love","es":"amor","it":"amore"},{"ru":"радость","en":"joy","es":"alegría","it":"gioia"},{"ru":"друг","en":"friend","es":"amigo","it":"amico"},{"ru":"враг","en":"enemy","es":"enemigo","it":"nemico"},{"ru":"книга","en":"book","es":"libro","it":"libro"},{"ru":"школа","en":"school","es":"escuela","it":"scuola"},{"ru":"учитель","en":"teacher","es":"maestro","it":"insegnante"},{"ru":"ребёнок","en":"child","es":"niño","it":"bambino"},{"ru":"мать","en":"mother","es":"madre","it":"madre"},{"ru":"отец","en":"father","es":"padre","it":"padre"},{"ru":"брат","en":"brother","es":"hermano","it":"fratello"},{"ru":"сестра","en":"sister","es":"hermana","it":"sorella"},{"ru":"сын","en":"son","es":"hijo","it":"figlio"},{"ru":"дочь","en":"daughter","es":"hija","it":"figlia"},{"ru":"рука","en":"hand","es":"mano","it":"mano"},{"ru":"нога","en":"leg","es":"pierna","it":"gamba"},{"ru":"голова","en":"head","es":"cabeza","it":"testa"},{"ru":"глаз","en":"eye","es":"ojo","it":"occhio"},{"ru":"ухо","en":"ear","es":"oreja","it":"orecchio"},{"ru":"рот","en":"mouth","es":"boca","it":"bocca"},{"ru":"зуб","en":"tooth","es":"diente","it":"dente"},{"ru":"язык","en":"tongue","es":"lengua","it":"lingua"},{"ru":"сердце","en":"heart","es":"corazón","it":"cuore"},{"ru":"душа","en":"soul","es":"alma","it":"anima"},{"ru":"лес","en":"forest","es":"bosque","it":"foresta"},{"ru":"поле","en":"field","es":"campo","it":"campo"},{"ru":"река","en":"river","es":"río","it":"fiume"},{"ru":"море","en":"sea","es":"mar","it":"mare"},{"ru":"гора","en":"mountain","es":"montaña","it":"montagna"},{"ru":"дорога","en":"road","es":"carretera","it":"strada"},{"ru":"машина","en":"car","es":"coche","it":"macchina"},{"ru":"собака","en":"dog","es":"perro","it":"cane"},{"ru":"кошка","en":"cat","es":"gato","it":"gatto"},{"ru":"птица","en":"bird","es":"pájaro","it":"uccello"},{"ru":"рыба","en":"fish","es":"pez","it":"pesce"},{"ru":"дерево","en":"tree","es":"árbol","it":"albero"},{"ru":"цветок","en":"flower","es":"flor","it":"fiore"},{"ru":"трава","en":"grass","es":"hierba","it":"erba"},{"ru":"камень","en":"stone","es":"piedra","it":"pietra"},{"ru":"огонь","en":"fire","es":"fuego","it":"fuoco"},{"ru":"дым","en":"smoke","es":"humo","it":"fumo"},{"ru":"звук","en":"sound","es":"sonido","it":"suono"},{"ru":"свет","en":"light","es":"luz","it":"luce"},{"ru":"тень","en":"shadow","es":"sombra","it":"ombra"},{"ru":"стол","en":"table","es":"mesa","it":"tavolo"},{"ru":"стул","en":"chair","es":"silla","it":"sedia"},{"ru":"окно","en":"window","es":"ventana","it":"finestra"},{"ru":"дверь","en":"door","es":"puerta","it":"porta"},{"ru":"стена","en":"wall","es":"muro","it":"parete"},{"ru":"пол","en":"floor","es":"suelo","it":"pavimento"},{"ru":"крыша","en":"roof","es":"techo","it":"tetto"},{"ru":"кухня","en":"kitchen","es":"cocina","it":"cucina"},{"ru":"комната","en":"room","es":"habitación","it":"stanza"},{"ru":"хлеб","en":"bread","es":"pan","it":"pane"},{"ru":"мясо","en":"meat","es":"carne","it":"carne"},{"ru":"молоко","en":"milk","es":"leche","it":"latte"},{"ru":"суп","en":"soup","es":"sopa","it":"zuppa"},{"ru":"чай","en":"tea","es":"té","it":"tè"},{"ru":"кофе","en":"coffee","es":"café","it":"caffè"},{"ru":"сок","en":"juice","es":"zumo","it":"succo"},{"ru":"яблоко","en":"apple","es":"manzana","it":"mela"},{"ru":"сыр","en":"cheese","es":"queso","it":"formaggio"},{"ru":"яйцо","en":"egg","es":"huevo","it":"uovo"},{"ru":"масло","en":"butter","es":"mantequilla","it":"burro"},{"ru":"соль","en":"salt","es":"sal","it":"sale"},{"ru":"сахар","en":"sugar","es":"azúcar","it":"zucchero"},{"ru":"рис","en":"rice","es":"arroz","it":"riso"},{"ru":"каша","en":"porridge","es":"gachas","it":"polenta"},{"ru":"пирог","en":"pie","es":"pastel","it":"torta"},{"ru":"картофель","en":"potato","es":"patata","it":"patata"},{"ru":"лук","en":"onion","es":"cebolla","it":"cipolla"},{"ru":"чеснок","en":"garlic","es":"ajo","it":"aglio"},{"ru":"помидор","en":"tomato","es":"tomate","it":"pomodoro"},{"ru":"огурец","en":"cucumber","es":"pepino","it":"cetriolo"},{"ru":"капуста","en":"cabbage","es":"col","it":"cavolo"},{"ru":"груша","en":"pear","es":"pera","it":"pera"},{"ru":"слива","en":"plum","es":"ciruela","it":"prugna"},{"ru":"вишня","en":"cherry","es":"cereza","it":"ciliegia"},{"ru":"смородина","en":"currant","es":"grosella","it":"ribes"},{"ru":"банан","en":"banana","es":"plátano","it":"banana"},{"ru":"апельсин","en":"orange","es":"naranja","it":"arancia"},{"ru":"лимон","en":"lemon","es":"limón","it":"limone"},{"ru":"орех","en":"nut","es":"nuez","it":"noce"},{"ru":"гриб","en":"mushroom","es":"seta","it":"fungo"},{"ru":"мед","en":"honey","es":"miel","it":"miele"},{"ru":"сметана","en":"sourcream","es":"nata","it":"panna"},{"ru":"творог","en":"curd","es":"requesón","it":"ricotta"},{"ru":"сон","en":"sleep","es":"sueño","it":"sonno"},{"ru":"сонный","en":"sleepy","es":"somnoliento","it":"assonnato"},{"ru":"бодрый","en":"cheerful","es":"alegre","it":"allegro"},{"ru":"голод","en":"hunger","es":"hambre","it":"fame"},{"ru":"жажда","en":"thirst","es":"sed","it":"sete"},{"ru":"сила","en":"strength","es":"fuerza","it":"forza"},{"ru":"слабость","en":"weakness","es":"debilidad","it":"debolezza"},{"ru":"правда","en":"truth","es":"verdad","it":"verità"},{"ru":"ложь","en":"lie","es":"mentira","it":"bugia"},{"ru":"война","en":"war","es":"guerra","it":"guerra"},{"ru":"закон","en":"law","es":"ley","it":"legge"},{"ru":"народ","en":"people","es":"pueblo","it":"popolo"},{"ru":"власть","en":"power","es":"poder","it":"potere"},{"ru":"память","en":"memory","es":"memoria","it":"memoria"},{"ru":"мысль","en":"thought","es":"pensamiento","it":"pensiero"},{"ru":"речь","en":"speech","es":"discurso","it":"discorso"},{"ru":"песня","en":"song","es":"canción","it":"canzone"},{"ru":"музыка","en":"music","es":"música","it":"musica"},{"ru":"танец","en":"dance","es":"baile","it":"danza"},{"ru":"игра","en":"game","es":"juego","it":"gioco"},{"ru":"смех","en":"laughter","es":"risa","it":"risata"},{"ru":"слеза","en":"tear","es":"lágrima","it":"lacrima"},{"ru":"страх","en":"fear","es":"miedo","it":"paura"},{"ru":"надежда","en":"hope","es":"esperanza","it":"speranza"},{"ru":"вера","en":"faith","es":"fe","it":"fede"},{"ru":"сомнение","en":"doubt","es":"duda","it":"dubbio"},{"ru":"гордость","en":"pride","es":"orgullo","it":"orgoglio"},{"ru":"стыд","en":"shame","es":"vergüenza","it":"vergogna"},{"ru":"совесть","en":"conscience","es":"conciencia","it":"coscienza"},{"ru":"месть","en":"revenge","es":"venganza","it":"vendetta"},{"ru":"прощение","en":"forgiveness","es":"perdón","it":"perdono"},{"ru":"награда","en":"reward","es":"premio","it":"premio"},{"ru":"наказание","en":"punishment","es":"castigo","it":"punizione"},{"ru":"помощь","en":"help","es":"ayuda","it":"aiuto"},{"ru":"вред","en":"harm","es":"daño","it":"danno"},{"ru":"совет","en":"advice","es":"consejo","it":"consiglio"},{"ru":"обман","en":"deceit","es":"engaño","it":"inganno"},{"ru":"честность","en":"honesty","es":"honestidad","it":"onestà"},{"ru":"дружба","en":"friendship","es":"amistad","it":"amicizia"},{"ru":"вражда","en":"hostility","es":"hostilidad","it":"ostilità"},{"ru":"уважение","en":"respect","es":"respeto","it":"rispetto"},{"ru":"презрение","en":"contempt","es":"desprecio","it":"disprezzo"},{"ru":"милосердие","en":"mercy","es":"misericordia","it":"misericordia"},{"ru":"жестокость","en":"cruelty","es":"crueldad","it":"crueltà"},{"ru":"начало","en":"beginning","es":"principio","it":"inizio"},{"ru":"конец","en":"end","es":"fin","it":"fine"},{"ru":"середина","en":"middle","es":"medio","it":"mezzo"},{"ru":"путь","en":"path","es":"camino","it":"cammino"},{"ru":"тропа","en":"trail","es":"sendero","it":"sentiero"},{"ru":"мост","en":"bridge","es":"puente","it":"ponte"},{"ru":"озеро","en":"lake","es":"lago","it":"lago"},{"ru":"болото","en":"swamp","es":"pantano","it":"palude"},{"ru":"степь","en":"steppe","es":"estepa","it":"steppa"},{"ru":"пустыня","en":"desert","es":"desierto","it":"deserto"},{"ru":"долина","en":"valley","es":"valle","it":"valle"},{"ru":"пещера","en":"cave","es":"cueva","it":"grotta"},{"ru":"песок","en":"sand","es":"arena","it":"sabbia"},{"ru":"глина","en":"clay","es":"arcilla","it":"argilla"},{"ru":"золото","en":"gold","es":"oro","it":"oro"},{"ru":"серебро","en":"silver","es":"plata","it":"argento"},{"ru":"медь","en":"copper","es":"cobre","it":"rame"},{"ru":"железо","en":"iron","es":"hierro","it":"ferro"},{"ru":"сталь","en":"steel","es":"acero","it":"acciaio"},{"ru":"доска","en":"board","es":"tabla","it":"tavola"},{"ru":"лист","en":"leaf","es":"hoja","it":"foglia"},{"ru":"ветка","en":"branch","es":"rama","it":"ramo"},{"ru":"корень","en":"root","es":"raíz","it":"radice"},{"ru":"плод","en":"fruit","es":"fruta","it":"frutto"},{"ru":"семя","en":"seed","es":"semilla","it":"seme"},{"ru":"росток","en":"sprout","es":"brote","it":"germoglio"},{"ru":"ягода","en":"berry","es":"baya","it":"bacca"},{"ru":"куст","en":"bush","es":"arbusto","it":"cespuglio"},{"ru":"листва","en":"foliage","es":"follaje","it":"fronde"},{"ru":"кора","en":"bark","es":"corteza","it":"corteccia"},{"ru":"ветвь","en":"bough","es":"rama","it":"ramo"},{"ru":"ствол","en":"trunk","es":"tronco","it":"tronco"},{"ru":"цвет","en":"blossom","es":"flor","it":"fiore"},{"ru":"лепесток","en":"petal","es":"pétalo","it":"petalo"},{"ru":"тычинка","en":"stamen","es":"estambre","it":"stame"},{"ru":"пыльца","en":"pollen","es":"polen","it":"polline"},{"ru":"пчела","en":"bee","es":"abeja","it":"ape"},{"ru":"оса","en":"wasp","es":"avispa","it":"vespa"},{"ru":"муравей","en":"ant","es":"hormiga","it":"formica"},{"ru":"паук","en":"spider","es":"araña","it":"ragno"},{"ru":"муха","en":"fly","es":"mosca","it":"mosca"},{"ru":"комар","en":"mosquito","es":"mosquito","it":"zanzara"},{"ru":"бабочка","en":"butterfly","es":"mariposa","it":"farfalla"},{"ru":"жук","en":"beetle","es":"escarabajo","it":"scarabeo"},{"ru":"змея","en":"snake","es":"serpiente","it":"serpente"},{"ru":"ящерица","en":"lizard","es":"lagarto","it":"lucertola"},{"ru":"лягушка","en":"frog","es":"rana","it":"rana"},{"ru":"черепаха","en":"turtle","es":"tortuga","it":"tartaruga"},{"ru":"кролик","en":"rabbit","es":"conejo","it":"coniglio"},{"ru":"белка","en":"squirrel","es":"ardilla","it":"scoiattolo"},{"ru":"мышь","en":"mouse","es":"ratón","it":"topo"},{"ru":"крыса","en":"rat","es":"rata","it":"ratto"},{"ru":"лошадь","en":"horse","es":"caballo","it":"cavallo"},{"ru":"корова","en":"cow","es":"vaca","it":"mucca"},{"ru":"свинья","en":"pig","es":"cerdo","it":"maiale"},{"ru":"овца","en":"sheep","es":"oveja","it":"pecora"},{"ru":"коза","en":"goat","es":"cabra","it":"capra"},{"ru":"баран","en":"ram","es":"carnero","it":"montone"},{"ru":"петух","en":"rooster","es":"gallo","it":"gallo"},{"ru":"курица","en":"hen","es":"gallina","it":"gallina"},{"ru":"утка","en":"duck","es":"pato","it":"anatra"},{"ru":"гусь","en":"goose","es":"ganso","it":"oca"},{"ru":"индюк","en":"turkey","es":"pavo","it":"tacchino"},{"ru":"голубь","en":"pigeon","es":"paloma","it":"piccione"},{"ru":"ворона","en":"crow","es":"cuervo","it":"corvo"},{"ru":"сорока","en":"magpie","es":"urraca","it":"gazza"},{"ru":"ласточка","en":"swallow","es":"golondrina","it":"rondine"},{"ru":"жаворонок","en":"lark","es":"alondra","it":"allodola"},{"ru":"соловей","en":"nightingale","es":"ruiseñor","it":"usignolo"},{"ru":"синица","en":"tit","es":"carbonero","it":"cinciallegra"},{"ru":"воробей","en":"sparrow","es":"gorrión","it":"passero"},{"ru":"орёл","en":"eagle","es":"águila","it":"aquila"},{"ru":"сокол","en":"falcon","es":"halcón","it":"falco"},{"ru":"ястреб","en":"hawk","es":"azor","it":"sparviero"},{"ru":"сова","en":"owl","es":"búho","it":"gufo"},{"ru":"лебедь","en":"swan","es":"cisne","it":"cigno"},{"ru":"аист","en":"stork","es":"cigüeña","it":"cicogna"},{"ru":"цапля","en":"heron","es":"garza","it":"airone"},{"ru":"чайка","en":"gull","es":"gaviota","it":"gabbiano"},{"ru":"щука","en":"pike","es":"lucio","it":"luccio"},{"ru":"окунь","en":"perch","es":"perca","it":"persico"},{"ru":"карась","en":"carp","es":"carpa","it":"carpa"},{"ru":"лещ","en":"bream","es":"brema","it":"bream"},{"ru":"судак","en":"zander","es":"lucioperca","it":"sandre"},{"ru":"треска","en":"cod","es":"bacalao","it":"merluzzo"},{"ru":"сельдь","en":"herring","es":"arenque","it":"aringa"},{"ru":"килька","en":"sprat","es":"espadín","it":"spratto"},{"ru":"креветка","en":"shrimp","es":"camarón","it":"gambero"},{"ru":"краб","en":"crab","es":"cangrejo","it":"granchio"},{"ru":"осьминог","en":"octopus","es":"pulpo","it":"polpo"},{"ru":"кальмар","en":"squid","es":"calamar","it":"calamaro"},{"ru":"медуза","en":"jellyfish","es":"medusa","it":"medusa"},{"ru":"акула","en":"shark","es":"tiburón","it":"squalo"},{"ru":"кит","en":"whale","es":"ballena","it":"balena"},{"ru":"дельфин","en":"dolphin","es":"delfín","it":"delfino"},{"ru":"тюлень","en":"seal","es":"foca","it":"foca"},{"ru":"морж","en":"walrus","es":"morsa","it":"tricheco"},{"ru":"медведь","en":"bear","es":"oso","it":"orso"},{"ru":"волк","en":"wolf","es":"lobo","it":"lupo"},{"ru":"лиса","en":"fox","es":"zorro","it":"volpe"},{"ru":"заяц","en":"hare","es":"liebre","it":"lepre"},{"ru":"ёж","en":"hedgehog","es":"erizo","it":"riccio"},{"ru":"бобр","en":"beaver","es":"castor","it":"castoro"},{"ru":"выдра","en":"otter","es":"nutria","it":"lontra"},{"ru":"норка","en":"mink","es":"visón","it":"visone"},{"ru":"хорёк","en":"ferret","es":"hurón","it":"furetto"},{"ru":"барсук","en":"badger","es":"tejón","it":"tasso"},{"ru":"енот","en":"raccoon","es":"mapache","it":"procione"},{"ru":"лось","en":"elk","es":"alce","it":"alce"},{"ru":"олень","en":"deer","es":"ciervo","it":"cervo"},{"ru":"кабан","en":"boar","es":"jabalí","it":"cinghiale"},{"ru":"косуля","en":"roedeer","es":"corzo","it":"capriolo"},{"ru":"зубр","en":"bison","es":"bisonte","it":"bisonte"},{"ru":"зайца","en":"hareacc","es":"liebre","it":"lepre"},{"ru":"бурундук","en":"chipmunk","es":"ardilla","it":"tamia"},{"ru":"и","en":"and","es":"y","it":"e"},{"ru":"в","en":"in","es":"en","it":"in"},{"ru":"не","en":"not","es":"no","it":"non"},{"ru":"на","en":"on","es":"en","it":"su"},{"ru":"что","en":"what","es":"qué","it":"che"},{"ru":"с","en":"with","es":"con","it":"con"},{"ru":"как","en":"how","es":"como","it":"come"},{"ru":"по","en":"along","es":"por","it":"per"},{"ru":"из","en":"from","es":"de","it":"da"},{"ru":"у","en":"at","es":"a","it":"a"},{"ru":"за","en":"behind","es":"detrás","it":"dietro"},{"ru":"к","en":"to","es":"a","it":"a"},{"ru":"о","en":"about","es":"de","it":"su"},{"ru":"да","en":"yes","es":"sí","it":"sì"},{"ru":"но","en":"but","es":"pero","it":"ma"},{"ru":"а","en":"ah","es":"y","it":"e"},{"ru":"же","en":"then","es":"pues","it":"dunque"},{"ru":"ли","en":"whether","es":"si","it":"se"},{"ru":"бы","en":"would","es":"-","it":"-"},{"ru":"или","en":"or","es":"o","it":"o"},{"ru":"то","en":"that","es":"eso","it":"quello"},{"ru":"все","en":"all","es":"todo","it":"tutto"},{"ru":"ещё","en":"still","es":"aún","it":"ancora"},{"ru":"уже","en":"already","es":"ya","it":"già"},{"ru":"очень","en":"very","es":"muy","it":"molto"},{"ru":"можно","en":"may","es":"se","it":"si"},{"ru":"если","en":"if","es":"si","it":"se"},{"ru":"только","en":"only","es":"solo","it":"solo"},{"ru":"ему","en":"tohim","es":"él","it":"lui"},{"ru":"её","en":"toher","es":"ella","it":"lei"},{"ru":"им","en":"tothem","es":"les","it":"loro"},{"ru":"нас","en":"us","es":"nos","it":"noi"},{"ru":"вас","en":"youpl","es":"os","it":"voi"},{"ru":"их","en":"them","es":"ellos","it":"loro"},{"ru":"этот","en":"thism","es":"este","it":"questo"},{"ru":"эта","en":"thisf","es":"esta","it":"questa"},{"ru":"это","en":"thisn","es":"esto","it":"questo"},{"ru":"эти","en":"these","es":"estos","it":"questi"},{"ru":"один","en":"one","es":"uno","it":"uno"},{"ru":"два","en":"two","es":"dos","it":"due"},{"ru":"три","en":"three","es":"tres","it":"tre"},{"ru":"много","en":"many","es":"muchos","it":"molti"},{"ru":"мало","en":"few","es":"pocos","it":"pochi"},{"ru":"нет","en":"noex","es":"no","it":"no"},{"ru":"здесь","en":"here","es":"aquí","it":"qui"},{"ru":"там","en":"there","es":"allí","it":"là"},{"ru":"тут","en":"here2","es":"acá","it":"qua"},{"ru":"потом","en":"then2","es":"luego","it":"poi"},{"ru":"опять","en":"again","es":"otra","it":"ancora"},{"ru":"вновь","en":"anew","es":"nuevo","it":"nuovo"},{"ru":"вместе","en":"together","es":"juntos","it":"insieme"},{"ru":"назад","en":"back","es":"atrás","it":"indietro"},{"ru":"впереди","en":"ahead","es":"adelante","it":"avanti"},{"ru":"внутри","en":"inside","es":"dentro","it":"dentro"},{"ru":"вокруг","en":"around","es":"alrededor","it":"intorno"},{"ru":"вместо","en":"instead","es":"lugar","it":"invece"},{"ru":"сверху","en":"above","es":"encima","it":"sopra"},{"ru":"снизу","en":"below","es":"debajo","it":"sotto"},{"ru":"спереди","en":"infront","es":"delante","it":"davanti"},{"ru":"сзади","en":"behind2","es":"detrás","it":"dietro"},{"ru":"около","en":"near","es":"cerca","it":"vicino"},{"ru":"среди","en":"among","es":"entre","it":"fra"},{"ru":"между","en":"between","es":"entre","it":"tra"},{"ru":"через","en":"through","es":"vía","it":"attraverso"},{"ru":"без","en":"without","es":"sin","it":"senza"},{"ru":"при","en":"at2","es":"en","it":"a"},{"ru":"над","en":"over","es":"sobre","it":"sopra"},{"ru":"под","en":"under","es":"bajo","it":"sotto"},{"ru":"про","en":"about2","es":"sobre","it":"su"},{"ru":"для","en":"for","es":"para","it":"per"},{"ru":"от","en":"from2","es":"de","it":"da"},{"ru":"до","en":"until","es":"hasta","it":"fino"},{"ru":"ради","en":"for2","es":"por","it":"per"},{"ru":"благодаря","en":"thanks","es":"gracias","it":"grazie"},{"ru":"вопреки","en":"despite","es":"pesar","it":"nonostante"},{"ru":"согласно","en":"according","es":"según","it":"secondo"},{"ru":"включая","en":"including","es":"incluyendo","it":"incluso"},{"ru":"исключая","en":"excluding","es":"excluyendo","it":"escluso"},{"ru":"насчёт","en":"about3","es":"acerca","it":"circa"},{"ru":"вроде","en":"like","es":"como","it":"come"},{"ru":"словно","en":"asif","es":"como si","it":"come se"},{"ru":"будто","en":"exactly","es":"exacto","it":"esattamente"},{"ru":"точно","en":"evenly","es":"justo","it":"pari"},{"ru":"ровно","en":"almost","es":"casi","it":"quasi"},{"ru":"почти","en":"barely","es":"apenas","it":"a malapena"},{"ru":"едва","en":"hardly","es":"apenas","it":"difficile"},{"ru":"вряд","en":"probably","es":"probable","it":"probabilmente"},{"ru":"наверное","en":"possibly","es":"posible","it":"possibilmente"},{"ru":"возможно","en":"likely","es":"probable","it":"probabile"},{"ru":"вероятно","en":"ofcourse","es":"claro","it":"certo"},{"ru":"конечно","en":"naturally","es":"natural","it":"naturalmente"},{"ru":"разумеется","en":"really","es":"realmente","it":"davvero"},{"ru":"действительно","en":"namely","es":"es decir","it":"cioè"},{"ru":"именно","en":"only2","es":"solo","it":"solo"},{"ru":"лишь","en":"exclusively","es":"exclusivo","it":"esclusivamente"},{"ru":"исключительно","en":"especially","es":"especial","it":"specialmente"},{"ru":"особенно","en":"main","es":"principal","it":"principale"},{"ru":"главное","en":"important","es":"importante","it":"importante"},{"ru":"важно","en":"needed","es":"necesario","it":"serve"},{"ru":"нужно","en":"must","es":"debe","it":"deve"},{"ru":"надо","en":"should","es":"debería","it":"dovrebbe"},{"ru":"следует","en":"ought","es":"conviene","it":"conviene"},{"ru":"мочь","en":"can","es":"puede","it":"può"},{"ru":"хотеть","en":"want","es":"quiere","it":"vuole"},{"ru":"думать","en":"think","es":"piensa","it":"pensa"},{"ru":"знать","en":"know","es":"sabe","it":"sa"},{"ru":"верить","en":"believe","es":"cree","it":"crede"},{"ru":"надеяться","en":"hopeh","es":"espera","it":"spera"},{"ru":"бояться","en":"fearh","es":"teme","it":"teme"},{"ru":"любить","en":"loveh","es":"ama","it":"ama"},{"ru":"ненавидеть","en":"hate","es":"odia","it":"odia"},{"ru":"помнить","en":"remember","es":"recuerda","it":"ricorda"},{"ru":"забывать","en":"forget","es":"olvida","it":"dimentica"},{"ru":"понимать","en":"understand","es":"entiende","it":"capisce"},{"ru":"объяснять","en":"explain","es":"explica","it":"spiega"},{"ru":"спрашивать","en":"ask","es":"pregunta","it":"chiede"},{"ru":"отвечать","en":"answer","es":"responde","it":"risponde"},{"ru":"молчать","en":"silent","es":"callar","it":"tacere"},{"ru":"кричать","en":"shout","es":"gritar","it":"gridare"}];
+
+      const wrap = document.getElementById("keyboard-wrap");
+      const keyboardEl = document.getElementById("keyboard");
+      const btnTrainRu = document.getElementById("train-ru");
+      const btnTrainEn = document.getElementById("train-en");
+      const btnTrainEs = document.getElementById("train-es");
+      const btnTrainIt = document.getElementById("train-it");
+      const practice = document.getElementById("practice");
+      const wordLine = document.getElementById("word-line");
+      const sessionStatsEl = document.getElementById("session-stats");
+      const doneMsg = document.getElementById("done-msg");
+      const btnNewWord = document.getElementById("btn-new-word");
+      const statsGlobalEl = document.getElementById("stats-global");
+      const historyBody = document.getElementById("history-body");
+      const uiLangSelect = document.getElementById("ui-lang");
+
+      const UI_LANG_KEY = "bk_ui_lang";
+      const LANG_CODES = ["ru", "en", "es", "it"];
+      const i18nEl = {
+        h1: document.getElementById("i18n-h1"),
+        subtitle: document.getElementById("i18n-subtitle"),
+        uiLangLabel: document.getElementById("i18n-ui-lang-label"),
+        practiceTitle: document.getElementById("i18n-practice-title"),
+        wordLangLabel: document.getElementById("i18n-word-lang-label"),
+        trainSeg: document.getElementById("train-seg"),
+        legend: document.getElementById("i18n-legend"),
+        keyboardTitle: document.getElementById("i18n-keyboard-title"),
+        statsTitle: document.getElementById("i18n-stats-title"),
+        historyHeading: document.getElementById("i18n-history-heading"),
+        historyTable: document.getElementById("history-table"),
+        thText: document.getElementById("i18n-th-text"),
+        thLang: document.getElementById("i18n-th-lang"),
+        thTime: document.getElementById("i18n-th-time"),
+        thWrong: document.getElementById("i18n-th-wrong"),
+        thResult: document.getElementById("i18n-th-result"),
+      };
+      const STR = {
+        ru: {
+          pageTitle: "Слепая печать онлайн — тренажёр: RU, EN, ES, IT",
+          h1: "Слепая печать — тренажёр онлайн",
+          subtitle:
+            'За раз — <strong>5–10 слов</strong> на одном языке; набор слов совпадает по смыслу на RU/EN/ES/IT (переводы). Раскладка ОС = языку слов. Наведите на слово — подсказка с переводами; на экране — удержание. Клавиатура и статистика ниже.',
+          uiLangLabel: "Язык интерфейса",
+          practiceTitle: "Тренировка",
+          wordLangLabel: "Язык слов",
+          trainGroupAria: "Язык тренировки",
+          trainRu: "Русские",
+          trainEn: "Английские",
+          trainEs: "Испанские",
+          trainIt: "Итальянские",
+          practiceAria: "Наберите фразу из слов",
+          newPhrase: "Новая фраза (5–10 слов)",
+          legend:
+            '<span><i class="dot home"></i> Метки на F и J (А и О на русской раскладке)</span> <span style="color:var(--key-dim)">Слова на всех языках — одни и те же смыслы (переводы). Наведите на слово или удерживайте на экране.</span>',
+          statsTitle: "Статистика",
+          last10: "Последние 100 попыток",
+          historyAria: "История",
+          thText: "Текст",
+          thLang: "Язык",
+          thTime: "Время",
+          thWrong: "Ошибок",
+          thResult: "Результат",
+          emptyHistory: "Пока нет завершённых фраз",
+          histLangRu: "рус.",
+          histLangEn: "англ.",
+          histLangEs: "исп.",
+          histLangIt: "ит.",
+          perfectResult: "без ошибок",
+          flawedResult: "с ошибками",
+          sessionWords: "Слов",
+          sessionChars: "Символов",
+          sessionCorrect: "Верно",
+          sessionWrongLabel: "Ошибок",
+          sessionTime: "Время",
+          statsRuTitle: "Русские слова (всего)",
+          statsEnTitle: "Английские слова (всего)",
+          statsEsTitle: "Испанские слова (всего)",
+          statsItTitle: "Итальянские слова (всего)",
+          dtAttempts: "Завершённых фраз",
+          dtCorrect: "Верных букв (сумма)",
+          dtWrongPress: "Неверных нажатий (сумма)",
+          dtPerfect: "Фраз без ошибок",
+          dtFlawed: "Фраз с ошибками",
+          donePerfect: "Фраза из {n} слов набрана без ошибок. Время: {t}.",
+          doneFlawed: "Фраза набрана. Ошибок по клавишам: {w}. Время: {t}.",
+          keyboardSectionTitle: "Схема клавиатуры",
+          emptyWordLine: "—",
+        },
+        en: {
+          pageTitle: "Touch typing trainer — RU, EN, ES, IT | Browser",
+          h1: "Blind typing — online trainer",
+          subtitle:
+            'Each round: <strong>5–10 words</strong> in one language; word sets are aligned translations across RU/EN/ES/IT. Match OS layout to the word language. Hover a word (long-press on touch) for other languages. Keyboard and stats below.',
+          uiLangLabel: "Interface language",
+          practiceTitle: "Practice",
+          wordLangLabel: "Word language",
+          trainGroupAria: "Training language",
+          trainRu: "Russian",
+          trainEn: "English",
+          trainEs: "Spanish",
+          trainIt: "Italian",
+          practiceAria: "Type the phrase word by word",
+          newPhrase: "New phrase (5–10 words)",
+          legend:
+            '<span><i class="dot home"></i> Home bumps on F and J (А and О on Russian layout)</span> <span style="color:var(--key-dim)">Same meanings in all languages. Hover a word or long-press on touch for translations.</span>',
+          statsTitle: "Statistics",
+          last10: "Last 100 attempts",
+          historyAria: "History",
+          thText: "Text",
+          thLang: "Lang.",
+          thTime: "Time",
+          thWrong: "Errors",
+          thResult: "Result",
+          emptyHistory: "No completed phrases yet",
+          histLangRu: "RU",
+          histLangEn: "EN",
+          histLangEs: "ES",
+          histLangIt: "IT",
+          perfectResult: "no errors",
+          flawedResult: "with errors",
+          sessionWords: "Words",
+          sessionChars: "Chars",
+          sessionCorrect: "Correct",
+          sessionWrongLabel: "Errors",
+          sessionTime: "Time",
+          statsRuTitle: "Russian words (total)",
+          statsEnTitle: "English words (total)",
+          statsEsTitle: "Spanish words (total)",
+          statsItTitle: "Italian words (total)",
+          dtAttempts: "Completed phrases",
+          dtCorrect: "Correct keystrokes (sum)",
+          dtWrongPress: "Wrong keystrokes (sum)",
+          dtPerfect: "Phrases with no errors",
+          dtFlawed: "Phrases with errors",
+          donePerfect: "Phrase of {n} words typed with no errors. Time: {t}.",
+          doneFlawed: "Phrase complete. Wrong key presses: {w}. Time: {t}.",
+          keyboardSectionTitle: "Keyboard layout",
+          emptyWordLine: "—",
+        },
+        es: {
+          pageTitle: "Mecanografía — entrenador RU, EN, ES, IT",
+          h1: "Mecanografía — entrenador en línea",
+          subtitle:
+            'Cada ronda: <strong>de 5 a 10 palabras</strong> en un solo idioma (ruso, inglés, español o italiano), separadas por espacio. El teclado del sistema debe coincidir con el idioma (español/italiano: QWERTY con tildes). El teclado en pantalla es ayuda. Estadísticas abajo.',
+          uiLangLabel: "Idioma de la interfaz",
+          practiceTitle: "Práctica",
+          wordLangLabel: "Idioma de las palabras",
+          trainGroupAria: "Idioma de entrenamiento",
+          trainRu: "Rusas",
+          trainEn: "Inglesas",
+          trainEs: "Españolas",
+          trainIt: "Italianas",
+          practiceAria: "Escribe la frase",
+          newPhrase: "Nueva frase (5–10 palabras)",
+          legend:
+            '<span><i class="dot home"></i> Marcas en F y J (А y О en teclado ruso)</span> <span style="color:var(--key-dim)">Mismos significados en todos los idiomas. Pasa el ratón o mantén pulsado en pantalla.</span>',
+          statsTitle: "Estadísticas",
+          last10: "Últimos 100 intentos",
+          historyAria: "Historial",
+          thText: "Texto",
+          thLang: "Idioma",
+          thTime: "Tiempo",
+          thWrong: "Errores",
+          thResult: "Resultado",
+          emptyHistory: "Aún no hay frases completadas",
+          histLangRu: "RU",
+          histLangEn: "EN",
+          histLangEs: "ES",
+          histLangIt: "IT",
+          perfectResult: "sin errores",
+          flawedResult: "con errores",
+          sessionWords: "Palabras",
+          sessionChars: "Caracteres",
+          sessionCorrect: "Correctos",
+          sessionWrongLabel: "Errores",
+          sessionTime: "Tiempo",
+          statsRuTitle: "Palabras rusas (total)",
+          statsEnTitle: "Palabras inglesas (total)",
+          statsEsTitle: "Palabras españolas (total)",
+          statsItTitle: "Palabras italianas (total)",
+          dtAttempts: "Frases completadas",
+          dtCorrect: "Pulsaciones correctas (suma)",
+          dtWrongPress: "Pulsaciones erróneas (suma)",
+          dtPerfect: "Frases sin errores",
+          dtFlawed: "Frases con errores",
+          donePerfect: "Frase de {n} palabras sin errores. Tiempo: {t}.",
+          doneFlawed: "Frase terminada. Pulsaciones erróneas: {w}. Tiempo: {t}.",
+          keyboardSectionTitle: "Teclado de referencia",
+          emptyWordLine: "—",
+        },
+        it: {
+          pageTitle: "Dattilografia — allenatore RU, EN, ES, IT",
+          h1: "Dattilografia — allenatore online",
+          subtitle:
+            'Ogni turno: <strong>da 5 a 10 parole</strong> in una sola lingua (russo, inglese, spagnolo o italiano), separate da spazio. La tastiera di sistema deve corrispondere alla lingua delle parole (ES/IT: QWERTY con accenti). La tastiera a schermo è una guida. Statistiche in basso.',
+          uiLangLabel: "Lingua dell’interfaccia",
+          practiceTitle: "Allenamento",
+          wordLangLabel: "Lingua delle parole",
+          trainGroupAria: "Lingua di allenamento",
+          trainRu: "Russe",
+          trainEn: "Inglesi",
+          trainEs: "Spagnole",
+          trainIt: "Italiane",
+          practiceAria: "Digita la frase",
+          newPhrase: "Nuova frase (5–10 parole)",
+          legend:
+            '<span><i class="dot home"></i> Rilievi su F e J (А e О sulla tastiera russa)</span> <span style="color:var(--key-dim)">Stessi significati in tutte le lingue. Passa il mouse o tieni premuto sul touch.</span>',
+          statsTitle: "Statistiche",
+          last10: "Ultimi 100 tentativi",
+          historyAria: "Cronologia",
+          thText: "Testo",
+          thLang: "Lingua",
+          thTime: "Tempo",
+          thWrong: "Errori",
+          thResult: "Risultato",
+          emptyHistory: "Nessuna frase completata",
+          histLangRu: "RU",
+          histLangEn: "EN",
+          histLangEs: "ES",
+          histLangIt: "IT",
+          perfectResult: "senza errori",
+          flawedResult: "con errori",
+          sessionWords: "Parole",
+          sessionChars: "Caratteri",
+          sessionCorrect: "Corretti",
+          sessionWrongLabel: "Errori",
+          sessionTime: "Tempo",
+          statsRuTitle: "Parole russe (totale)",
+          statsEnTitle: "Parole inglesi (totale)",
+          statsEsTitle: "Parole spagnole (totale)",
+          statsItTitle: "Parole italiane (totale)",
+          dtAttempts: "Frasi completate",
+          dtCorrect: "Battiture corrette (somma)",
+          dtWrongPress: "Battiture errate (somma)",
+          dtPerfect: "Frasi senza errori",
+          dtFlawed: "Frasi con errori",
+          donePerfect: "Frase di {n} parole senza errori. Tempo: {t}.",
+          doneFlawed: "Frase completata. Battiture errate: {w}. Tempo: {t}.",
+          keyboardSectionTitle: "Schema tastiera",
+          emptyWordLine: "—",
+        },
+      };
+
+      let uiLang = "en";
+      function t(key) {
+        return (STR[uiLang] && STR[uiLang][key]) || STR.en[key] || STR.ru[key] || key;
+      }
+
+      function applyUILang() {
+        uiLang = LANG_CODES.includes(uiLangSelect.value) ? uiLangSelect.value : "en";
+        try {
+          localStorage.setItem(UI_LANG_KEY, uiLang);
+        } catch (e) {}
+        document.documentElement.lang = uiLang;
+        document.title = t("pageTitle");
+        i18nEl.h1.textContent = t("h1");
+        i18nEl.subtitle.innerHTML = t("subtitle");
+        i18nEl.uiLangLabel.textContent = t("uiLangLabel");
+        i18nEl.practiceTitle.textContent = t("practiceTitle");
+        i18nEl.wordLangLabel.textContent = t("wordLangLabel");
+        i18nEl.trainSeg.setAttribute("aria-label", t("trainGroupAria"));
+        btnTrainRu.textContent = t("trainRu");
+        btnTrainEn.textContent = t("trainEn");
+        btnTrainEs.textContent = t("trainEs");
+        btnTrainIt.textContent = t("trainIt");
+        practice.setAttribute("aria-label", t("practiceAria"));
+        btnNewWord.textContent = t("newPhrase");
+        i18nEl.legend.innerHTML = t("legend");
+        i18nEl.keyboardTitle.textContent = t("keyboardSectionTitle");
+        i18nEl.statsTitle.textContent = t("statsTitle");
+        i18nEl.historyHeading.textContent = t("last10");
+        i18nEl.historyTable.setAttribute("aria-label", t("historyAria"));
+        i18nEl.thText.textContent = t("thText");
+        i18nEl.thLang.textContent = t("thLang");
+        i18nEl.thTime.textContent = t("thTime");
+        i18nEl.thWrong.textContent = t("thWrong");
+        i18nEl.thResult.textContent = t("thResult");
+        renderWordLine();
+        updateSessionStats();
+        renderGlobalStats();
+        renderHistory();
+        refreshDoneMessage();
+        setTrainLang(uiLang);
+      }
+
+      function refreshDoneMessage() {
+        if (!completed || !currentWord.length || lastRoundTimeMs == null) return;
+        const perfect = sessionWrong === 0;
+        const timeMs = lastRoundTimeMs;
+        doneMsg.textContent = perfect
+          ? t("donePerfect").replace("{n}", String(wordCountPhrase(currentWord))).replace("{t}", formatTime(timeMs))
+          : t("doneFlawed").replace("{w}", String(sessionWrong)).replace("{t}", formatTime(timeMs));
+      }
+
+      const STORAGE_KEY = "bk_typing_stats_v1";
+      const HISTORY_MAX = 100;
+      function defaultLangStat() {
+        return { attempts: 0, correctChars: 0, wrongPresses: 0, perfectWords: 0, flawedWords: 0 };
+      }
+      function loadStats() {
+        try {
+          const j = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          return {
+            ru: Object.assign(defaultLangStat(), j.ru || {}),
+            en: Object.assign(defaultLangStat(), j.en || {}),
+            es: Object.assign(defaultLangStat(), j.es || {}),
+            it: Object.assign(defaultLangStat(), j.it || {}),
+            history: Array.isArray(j.history) ? j.history.slice(0, HISTORY_MAX) : [],
+          };
+        } catch (e) {
+          return {
+            ru: defaultLangStat(),
+            en: defaultLangStat(),
+            es: defaultLangStat(),
+            it: defaultLangStat(),
+            history: [],
+          };
+        }
+      }
+      function saveStats(s) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      }
+
+      let trainLang = "en";
+      let currentWord = "";
+      /** @type {{ru:string,en:string,es:string,it:string}[]} */
+      let phraseMeta = [];
+      let index = 0;
+      let sessionWrong = 0;
+      let startedAt = null;
+      let completed = false;
+      let timerId = null;
+      let lastRoundTimeMs = null;
+      const bkTooltipEl = document.getElementById("bk-word-tooltip");
+      let wordHintLongPressTimer = null;
+      let tooltipLeaveTimer = null;
+
+      function hideWordTooltip() {
+        if (tooltipLeaveTimer) {
+          clearTimeout(tooltipLeaveTimer);
+          tooltipLeaveTimer = null;
+        }
+        bkTooltipEl.hidden = true;
+        bkTooltipEl.setAttribute("aria-hidden", "true");
+      }
+      function showWordTooltip(meta, anchorEl) {
+        const parts = [];
+        if (trainLang !== "ru") parts.push("<strong>RU</strong> " + escapeHtml(meta.ru));
+        if (trainLang !== "en") parts.push("<strong>EN</strong> " + escapeHtml(meta.en));
+        if (trainLang !== "es") parts.push("<strong>ES</strong> " + escapeHtml(meta.es));
+        if (trainLang !== "it") parts.push("<strong>IT</strong> " + escapeHtml(meta.it));
+        bkTooltipEl.innerHTML = parts.join("<br>");
+        bkTooltipEl.hidden = false;
+        bkTooltipEl.setAttribute("aria-hidden", "false");
+        const r = anchorEl.getBoundingClientRect();
+        let left = r.left;
+        let top = r.bottom + 8;
+        const tw = bkTooltipEl.offsetWidth;
+        const th = bkTooltipEl.offsetHeight;
+        if (left + tw > window.innerWidth - 12) left = Math.max(8, window.innerWidth - tw - 12);
+        if (left < 8) left = 8;
+        if (top + th > window.innerHeight - 12) top = Math.max(8, r.top - th - 8);
+        bkTooltipEl.style.left = left + "px";
+        bkTooltipEl.style.top = top + "px";
+      }
+      function bindWordHint(wrap, meta) {
+        wrap.addEventListener("mouseenter", function () {
+          if (tooltipLeaveTimer) {
+            clearTimeout(tooltipLeaveTimer);
+            tooltipLeaveTimer = null;
+          }
+          showWordTooltip(meta, wrap);
+        });
+        wrap.addEventListener("mouseleave", function () {
+          tooltipLeaveTimer = window.setTimeout(hideWordTooltip, 320);
+        });
+        wrap.addEventListener("touchstart", function (ev) {
+          wordHintLongPressTimer = window.setTimeout(function () {
+            wordHintLongPressTimer = null;
+            showWordTooltip(meta, wrap);
+          }, 550);
+        }, { passive: true });
+        wrap.addEventListener("touchmove", function () {
+          if (wordHintLongPressTimer) {
+            clearTimeout(wordHintLongPressTimer);
+            wordHintLongPressTimer = null;
+          }
+        });
+        wrap.addEventListener("touchend", function () {
+          if (wordHintLongPressTimer) {
+            clearTimeout(wordHintLongPressTimer);
+            wordHintLongPressTimer = null;
+          }
+        });
+        wrap.addEventListener("contextmenu", function (e) {
+          e.preventDefault();
+        });
+      }
+      document.addEventListener("click", function (e) {
+        const target = e.target;
+        if (target?.closest?.(".word-hint") || target?.closest?.(".bk-word-tooltip")) return;
+        hideWordTooltip();
+      });
+
+      function alignedIndicesForLang() {
+        const idx = [];
+        for (let i = 0; i < WORDS_ALIGNED.length; i++) {
+          const w = WORDS_ALIGNED[i][trainLang];
+          if (w && String(w).length <= 32) idx.push(i);
+        }
+        return idx;
+      }
+      function pickPhrase() {
+        const n = 5 + Math.floor(Math.random() * 6);
+        const indices = alignedIndicesForLang();
+        if (!indices.length) {
+          const ru = ["один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять"];
+          const en = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+          const es = ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
+          const it = ["uno", "due", "tre", "quattro", "cinque", "sei", "sette", "otto", "nove", "dieci"];
+          phraseMeta = ru.slice(0, n).map(function (r, i) {
+            return { ru: r, en: en[i], es: es[i], it: it[i] };
+          });
+          return phraseMeta
+            .map(function (row) {
+              return row[trainLang];
+            })
+            .join(" ");
+        }
+        const pool = indices.slice();
+        for (let i = pool.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const tmp = pool[i];
+          pool[i] = pool[j];
+          pool[j] = tmp;
+        }
+        const pickedIdx = [];
+        for (let p = 0; p < pool.length && pickedIdx.length < n; p++) pickedIdx.push(pool[p]);
+        while (pickedIdx.length < n) pickedIdx.push(indices[Math.floor(Math.random() * indices.length)]);
+        phraseMeta = pickedIdx.map(function (i) {
+          return WORDS_ALIGNED[i];
+        });
+        return pickedIdx
+          .map(function (i) {
+            return WORDS_ALIGNED[i][trainLang];
+          })
+          .join(" ");
+      }
+      function wordCountPhrase(s) {
+        return s ? s.trim().split(/\s+/).filter(Boolean).length : 0;
+      }
+      function renderWordLine() {
+        wordLine.innerHTML = "";
+        if (!currentWord.length) {
+          wordLine.textContent = t("emptyWordLine");
+          return;
+        }
+        const words = currentWord.split(" ");
+        let g = 0;
+        for (let wi = 0; wi < words.length; wi++) {
+          if (wi > 0) {
+            const sp = document.createElement("span");
+            sp.className = g < index ? "ch-done" : g === index ? "ch-cur" : "ch-todo";
+            sp.textContent = " ";
+            wordLine.appendChild(sp);
+            g++;
+          }
+          const word = words[wi];
+          const meta = phraseMeta[wi] || { ru: "", en: "", es: "", it: "" };
+          const wrap = document.createElement("span");
+          wrap.className = "word-hint";
+          wrap.setAttribute("tabindex", "0");
+          for (let j = 0; j < word.length; j++) {
+            const span = document.createElement("span");
+            span.textContent = word[j];
+            span.className = g < index ? "ch-done" : g === index ? "ch-cur" : "ch-todo";
+            wrap.appendChild(span);
+            g++;
+          }
+          bindWordHint(wrap, meta);
+          wordLine.appendChild(wrap);
+        }
+      }
+      function formatTime(ms) {
+        if (ms == null || ms < 0) return t("emptyWordLine");
+        const s = ms / 1000;
+        const dec = s.toFixed(1).replace(".", uiLang === "en" ? "." : ",");
+        const unit = uiLang === "ru" ? { s: " с", min: " мин " } : { s: " s", min: " min " };
+        if (s < 60) return uiLang === "en" ? dec + " s" : dec + unit.s;
+        const m = Math.floor(s / 60);
+        const sec = Math.round(s % 60);
+        return m + unit.min + sec + unit.s;
+      }
+      function updateSessionStats() {
+        let timeStr = "—";
+        if (startedAt && !completed) timeStr = formatTime(Date.now() - startedAt);
+        else if (completed) {
+          const stats = loadStats();
+          const last = stats.history[0];
+          if (last && last.word === currentWord) timeStr = formatTime(last.timeMs);
+        }
+        sessionStatsEl.innerHTML =
+          "<span>" +
+          t("sessionWords") +
+          ": <strong>" +
+          wordCountPhrase(currentWord) +
+          "</strong> (5–10)</span>" +
+          "<span>" +
+          t("sessionChars") +
+          ": <strong>" +
+          currentWord.length +
+          "</strong></span>" +
+          "<span>" +
+          t("sessionCorrect") +
+          ": <strong>" +
+          index +
+          "</strong></span>" +
+          "<span>" +
+          t("sessionWrongLabel") +
+          ": <strong>" +
+          sessionWrong +
+          "</strong></span>" +
+          "<span>" +
+          t("sessionTime") +
+          ": <strong>" +
+          timeStr +
+          "</strong></span>";
+      }
+      function stopTimer() {
+        if (timerId) {
+          clearInterval(timerId);
+          timerId = null;
+        }
+      }
+      function startTimerTick() {
+        stopTimer();
+        if (startedAt && !completed) timerId = setInterval(updateSessionStats, 100);
+      }
+      const STATS_TITLE_KEYS = { ru: "statsRuTitle", en: "statsEnTitle", es: "statsEsTitle", it: "statsItTitle" };
+      function renderGlobalStats() {
+        const s = loadStats();
+        let html = "";
+        for (const code of LANG_CODES) {
+          const L = s[code];
+          html +=
+            '<div class="stats-card"><h3>' +
+            escapeHtml(t(STATS_TITLE_KEYS[code])) +
+            "</h3><dl>" +
+            "<dt>" +
+            escapeHtml(t("dtAttempts")) +
+            "</dt><dd>" +
+            L.attempts +
+            "</dd>" +
+            "<dt>" +
+            escapeHtml(t("dtCorrect")) +
+            "</dt><dd>" +
+            L.correctChars +
+            "</dd>" +
+            "<dt>" +
+            escapeHtml(t("dtWrongPress")) +
+            "</dt><dd>" +
+            L.wrongPresses +
+            "</dd>" +
+            "<dt>" +
+            escapeHtml(t("dtPerfect")) +
+            "</dt><dd>" +
+            L.perfectWords +
+            "</dd>" +
+            "<dt>" +
+            escapeHtml(t("dtFlawed")) +
+            "</dt><dd>" +
+            L.flawedWords +
+            "</dd></dl></div>";
+        }
+        statsGlobalEl.innerHTML = html;
+      }
+      function escapeHtml(str) {
+        const d = document.createElement("div");
+        d.textContent = str;
+        return d.innerHTML;
+      }
+      function renderHistory() {
+        const s = loadStats();
+        historyBody.innerHTML = "";
+        if (!s.history.length) {
+          const tr = document.createElement("tr");
+          tr.innerHTML =
+            '<td colspan="5" style="color:var(--key-dim)">' + escapeHtml(t("emptyHistory")) + "</td>";
+          historyBody.appendChild(tr);
+          return;
+        }
+        for (let hi = 0; hi < s.history.length; hi++) {
+          const h = s.history[hi];
+          const tr = document.createElement("tr");
+          const full = h.word || "";
+          const tdText = document.createElement("td");
+          tdText.textContent = full.length > 52 ? full.slice(0, 50) + "…" : full;
+          tdText.title = full;
+          tr.appendChild(tdText);
+          const tdLang = document.createElement("td");
+          const histKey = { ru: "histLangRu", en: "histLangEn", es: "histLangEs", it: "histLangIt" }[h.lang];
+          tdLang.textContent = histKey ? t(histKey) : h.lang;
+          tr.appendChild(tdLang);
+          const tdTime = document.createElement("td");
+          tdTime.textContent = formatTime(h.timeMs);
+          tr.appendChild(tdTime);
+          const tdWrong = document.createElement("td");
+          tdWrong.textContent = String(h.wrong);
+          tr.appendChild(tdWrong);
+          const tdRes = document.createElement("td");
+          tdRes.textContent = h.perfect ? t("perfectResult") : t("flawedResult");
+          tr.appendChild(tdRes);
+          historyBody.appendChild(tr);
+        }
+      }
+      function completeRound() {
+        completed = true;
+        stopTimer();
+        const timeMs = Date.now() - startedAt;
+        const perfect = sessionWrong === 0;
+        const st = loadStats();
+        const L = trainLang;
+        st[L].attempts += 1;
+        st[L].correctChars += currentWord.length;
+        st[L].wrongPresses += sessionWrong;
+        if (perfect) st[L].perfectWords += 1;
+        else st[L].flawedWords += 1;
+        st.history.unshift({
+          word: currentWord,
+          lang: L,
+          timeMs: timeMs,
+          wrong: sessionWrong,
+          perfect: perfect,
+          at: new Date().toISOString(),
+        });
+        st.history = st.history.slice(0, HISTORY_MAX);
+        saveStats(st);
+        lastRoundTimeMs = timeMs;
+        doneMsg.textContent = perfect
+          ? t("donePerfect")
+              .replace("{n}", String(wordCountPhrase(currentWord)))
+              .replace("{t}", formatTime(timeMs))
+          : t("doneFlawed")
+              .replace("{w}", String(sessionWrong))
+              .replace("{t}", formatTime(timeMs));
+        doneMsg.classList.add("visible");
+        updateSessionStats();
+        renderGlobalStats();
+        renderHistory();
+      }
+      function newRound() {
+        stopTimer();
+        currentWord = pickPhrase();
+        index = 0;
+        sessionWrong = 0;
+        startedAt = null;
+        completed = false;
+        lastRoundTimeMs = null;
+        doneMsg.classList.remove("visible");
+        doneMsg.textContent = "";
+        renderWordLine();
+        updateSessionStats();
+        practice.classList.remove("error-flash");
+      }
+      function charMatch(key, expected) {
+        if (expected === " ") return key === " ";
+        return key.length === 1 && key.toLowerCase() === expected.toLowerCase();
+      }
+      practice.addEventListener("keydown", function (e) {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === "Tab") return;
+        if (completed) {
+          e.preventDefault();
+          return;
+        }
+        if (!currentWord.length) return;
+        if (e.repeat) return;
+        if (e.key.length !== 1) return;
+        hideWordTooltip();
+        e.preventDefault();
+        const expected = currentWord[index];
+        if (charMatch(e.key, expected)) {
+          if (startedAt == null) {
+            startedAt = Date.now();
+            startTimerTick();
+          }
+          index += 1;
+          renderWordLine();
+          if (index >= currentWord.length) completeRound();
+          else updateSessionStats();
+        } else {
+          if (startedAt == null) startedAt = Date.now();
+          if (timerId == null) startTimerTick();
+          sessionWrong += 1;
+          practice.classList.remove("error-flash");
+          void practice.offsetWidth;
+          practice.classList.add("error-flash");
+          updateSessionStats();
+        }
+      });
+      window.addEventListener("keydown", function (e) {
+        if (document.activeElement === practice || practice.contains(document.activeElement)) return;
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === "Tab") return;
+        if (e.key.length !== 1) return;
+        e.preventDefault();
+        practice.focus();
+        const ev = new KeyboardEvent("keydown", {
+          key: e.key,
+          code: e.code,
+          keyCode: e.keyCode,
+          which: e.which,
+          bubbles: true,
+          cancelable: true
+        });
+        practice.dispatchEvent(ev);
+      }, true);
+      window.addEventListener("paste", function () {
+        if (document.activeElement !== practice && !practice.contains(document.activeElement)) {
+          practice.focus();
+        }
+      });
+      btnNewWord.addEventListener("click", function () {
+        newRound();
+        practice.focus();
+      });
+      const trainBtns = { ru: btnTrainRu, en: btnTrainEn, es: btnTrainEs, it: btnTrainIt };
+      function setTrainLang(lang) {
+        trainLang = lang;
+        LANG_CODES.forEach((l) => trainBtns[l].setAttribute("aria-pressed", l === lang ? "true" : "false"));
+        switchLayout(lang === "ru" ? "ru" : "en");
+        newRound();
+        practice.focus();
+      }
+      LANG_CODES.forEach((lang) => trainBtns[lang].addEventListener("click", () => setTrainLang(lang)));
+
+      /** @type {Map<string, HTMLElement>} */
+      const codeToEl = new Map();
+
+      function render(layoutKey) {
+        const layout = LAYOUTS[layoutKey];
+        keyboardEl.innerHTML = "";
+        codeToEl.clear();
+
+        for (const row of layout.rows) {
+          const rowEl = document.createElement("div");
+          rowEl.className = "row";
+          for (const k of row) {
+            if (k.enOnly && layoutKey === "ru") continue;
+            if (k.ruOnly && layoutKey === "en") continue;
+
+            const keyEl = document.createElement("div");
+            keyEl.className = "key w-" + k.w + (k.home ? " home-pos" : "");
+            keyEl.dataset.code = k.code;
+            if (k.enOnly) keyEl.classList.add("key-en-only");
+            if (k.ruOnly) keyEl.classList.add("key-ru-only");
+
+            const main = document.createElement("span");
+            main.className = "main";
+            main.textContent = k.main;
+            keyEl.appendChild(main);
+            if (k.sub) {
+              const sub = document.createElement("span");
+              sub.className = "sub";
+              sub.textContent = k.sub;
+              keyEl.appendChild(sub);
+            }
+
+            rowEl.appendChild(keyEl);
+            codeToEl.set(k.code, keyEl);
+          }
+          keyboardEl.appendChild(rowEl);
+        }
+      }
+
+      function setKeyActive(code, on) {
+        const el = codeToEl.get(code);
+        if (el) el.classList.toggle("active", on);
+      }
+
+      function clearAllActive() {
+        codeToEl.forEach((el) => el.classList.remove("active"));
+      }
+
+      function switchLayout(key) {
+        wrap.dataset.layout = key;
+        render(key);
+      }
+
+      window.addEventListener("keydown", (e) => {
+        if (e.repeat) return;
+        if (codeToEl.has(e.code)) setKeyActive(e.code, true);
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (codeToEl.has(e.code)) setKeyActive(e.code, false);
+      });
+
+      window.addEventListener("blur", clearAllActive);
+
+      function getBrowserUILang() {
+        for (const loc of navigator.languages || []) {
+          const code = (loc || "").split("-")[0].toLowerCase();
+          if (LANG_CODES.includes(code)) return code;
+        }
+        const main = (navigator.language || navigator.userLanguage || "").split("-")[0].toLowerCase();
+        return LANG_CODES.includes(main) ? main : "en";
+      }
+      try {
+        const savedUi = localStorage.getItem(UI_LANG_KEY);
+        if (LANG_CODES.includes(savedUi)) {
+          uiLang = savedUi;
+          uiLangSelect.value = savedUi;
+        } else {
+          const browserLang = getBrowserUILang();
+          uiLang = browserLang;
+          uiLangSelect.value = browserLang;
+        }
+      } catch (e) {}
+      uiLangSelect.addEventListener("change", applyUILang);
+      applyUILang();
+    })();
+  </script>
+</body>
+</html>
