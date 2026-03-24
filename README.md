@@ -1,139 +1,93 @@
-# Touch Typing Trainer (Blind Keyboard)
+# Touch typing trainer
 
-A **single-file** touch typing (blind typing) trainer that runs entirely in the browser. No installation, no server: open the HTML file and start practicing. Supports **Russian**, **English**, **Spanish**, and **Italian** for both the interface and the word sets.
+<div align="center">
 
----
+**One file · Offline · No install**
 
-## Overview
+Interface & word sets: **Russian · English · Spanish · Italian**
 
-The trainer shows a phrase of **5–10 words** in one language. You type the phrase character by character. The same words are available in all four languages as **aligned translations** (same meanings), so you can train in one language and see translations into the others. The on-screen keyboard reflects the chosen layout (QWERTY for EN/ES/IT, JCUKEN for Russian) and highlights keys as you press them.
+[English](README.md) · [Русский](README.ru.md)
 
----
-
-## Functional Capabilities
-
-### Multi-language support
-
-- **Interface language**  
-  The whole UI (labels, buttons, messages, table headers) can be switched between:
-  - **Russian** (Русский)
-  - **English**
-  - **Spanish** (Español)
-  - **Italian** (Italiano)
-
-  The choice is stored in the browser (localStorage) so it persists across visits. On first load, the trainer tries to use the browser’s preferred language if it is one of the four above.
-
-- **Word set (training language)**  
-  Each round uses words in exactly one of the four languages:
-  - **Russian** (Русские слова)
-  - **English** (English words)
-  - **Spanish** (Español)
-  - **Italian** (Italiano)
-
-  When you change the **interface language**, the **word language** is automatically set to the same one (e.g. switch to Spanish UI → Spanish words and Spanish keyboard layout). You can still change the word language manually with the “Word language” buttons.
-
-- **Keyboard layouts**  
-  - **Russian**: JCUKEN (ЙЦУКЕН).  
-  - **English / Spanish / Italian**: QWERTY (same layout; ES/IT use the same key map).  
-  The on-screen keyboard updates to match the selected word language. Home row bumps are shown on **F** and **J** (Russian: **А** and **О**).
+</div>
 
 ---
 
-### Translations while typing
+## What it is
 
-- **Same meanings in all languages**  
-  The word list is one aligned dictionary: each “row” is one meaning with translations in RU, EN, ES, IT. A phrase is built from 5–10 such words in the language you chose.
+`index.html` is a **single-page** touch-typing (blind typing) trainer. Open it in a modern browser and practice immediately—no server and no extra assets.
 
-- **Word hints (translations)**  
-  For every word in the current phrase you can see its translations into the other three languages:
-  - **Desktop**: hover the mouse over the word. A tooltip appears with RU, EN, ES, IT (excluding the current training language).
-  - **Touch**: long-press on the word (about 0.5 s). The same tooltip appears. Moving or releasing the finger cancels the long-press.
-
-  So while you type, you can check the meaning in any of the four languages without leaving the page.
+Each round shows a phrase of **10–15 words** (space-separated) in one language. Optionally enable **digits and punctuation** to mix in 1–3 symbol-only chunks. You type character by character. The word list is **aligned across languages** (same meanings in RU, EN, ES, IT), so you can train in one language and peek at translations in the others. The on-screen keyboard matches the layout (**QWERTY** for EN/ES/IT, **JCUKEN / ЙЦУКЕН** for Russian) and highlights keys as you press them.
 
 ---
+
+## Features
+
+### Languages
+
+| | |
+| --- | --- |
+| **Interface** | Full UI (labels, buttons, messages, table headers) in **Русский**, **English**, **Español**, **Italiano**. |
+| **Word language** | Each round uses words in exactly one of the four languages. |
+| **Sync** | Changing the interface language also sets the word language to match; you can override with the word-language controls. |
+| **Persistence** | UI language is saved in `localStorage` (`bk_ui_lang`). On first visit, the app picks a sensible default from the browser language when possible. |
+
+### Layouts
+
+| Language group | Layout | Home-row bumps |
+| --- | --- | --- |
+| Russian | JCUKEN (ЙЦУКЕН) | **А** and **О** |
+| English, Spanish, Italian | QWERTY (shared key map for ES/IT) | **F** and **J** |
+
+### Hints while typing
+
+| Action | What you get |
+| --- | --- |
+| **Desktop** | Hover a word → tooltip with translations in the *other* three languages. |
+| **Touch** | Long-press (~0.5 s) on a word → same tooltip. |
+
+Phrases are built from the shared dictionary: one semantic row → four translations.
 
 ### Statistics
 
-- **Session stats (during the round)**  
-  Shown under the practice area:
-  - Number of words in the phrase (5–10)
-  - Total characters
-  - Correct characters so far
-  - Wrong key presses
-  - Elapsed time (updates during typing; after finishing, shows the final time for that phrase)
+| Area | Contents |
+| --- | --- |
+| **Session** (under practice) | Word count, character counts, correct / wrong keys, elapsed time. |
+| **Global** (four cards) | Per language: attempts, total correct/wrong keystrokes, perfect vs flawed phrases. |
+| **History** | Last **100** completed phrases: snippet, language, time, errors, result. |
 
-- **Global statistics (per language)**  
-  Below the keyboard, four cards (RU, EN, ES, IT) show aggregated data for completed phrases in that language:
-  - Completed phrases (attempts)
-  - Correct keystrokes (total)
-  - Wrong keystrokes (total)
-  - Phrases with no errors
-  - Phrases with at least one error
+All stats and history live in `localStorage` (`bk_typing_stats_v1`).
 
-- **History (last 100 attempts)**  
-  A table lists the most recent completed phrases:
-  - Phrase text (truncated if long; full text in tooltip)
-  - Language (RU / EN / ES / IT)
-  - Time taken
-  - Number of errors
-  - Result: “no errors” or “with errors”
+### Typing flow
 
-  All statistics and history are stored in the browser (localStorage) and persist between sessions.
+- **Practice strip** — *done* (dimmed) · *current* (highlight) · *to do* (soft).
+- **Focus** — If focus drifts away, the **first printable key** refocuses the practice area and counts as input.
+- **Paste** — Pasting without focus moves focus to the practice area (paste is not applied as typed text).
+- **New phrase** — Picks a new random phrase in the current word language.
+- **Errors** — Short red flash; on-screen keys follow **keydown / keyup** globally.
 
 ---
 
-### Typing experience
+## Technical notes
 
-- **Practice area**  
-  A focusable block shows the current phrase. Characters are shown as:
-  - **Done** (typed correctly, dimmed)
-  - **Current** (next character, highlighted)
-  - **To type** (upcoming, slightly faded)
-
-- **Focus and input**  
-  - If you click elsewhere and the practice area loses focus, **any keypress** (printable character) refocuses it and that key is applied to the phrase. So you can start typing immediately without clicking back.
-  - **Paste**: if the practice area is not focused when you paste, it receives focus so the next action is in the right place (paste content is not processed as typed text).
-
-- **New phrase**  
-  “New phrase (5–10 words)” picks a new random phrase in the current word language and resets the round.
-
-- **Feedback**  
-  - Wrong key: short red flash on the practice area.  
-  - On-screen keys highlight on keydown and clear on keyup (global), so you can see which key was pressed.
-
-- **Completion**  
-  When you type the last character, the round ends: a message shows whether the phrase was completed with or without errors and the time. Stats and history are updated; you can start a new phrase with the button.
+| Topic | Detail |
+| --- | --- |
+| **Bundle** | All HTML, CSS, JavaScript, and vocabulary are in **`index.html`**. |
+| **Offline** | Works without network once the file is local. |
+| **Storage** | `bk_ui_lang`, `bk_typing_stats_v1`; history capped at 100 rows. |
+| **A11y** | Semantic markup, `aria-*`, `role="application"`, `aria-live` where appropriate. |
 
 ---
 
-## Technical details
+## Quick reference
 
-- **Single file**  
-  All HTML, CSS, JavaScript, and the word list are in one file (e.g. `blind-keyboard.html`). No external CSS, JS, or data files. Works offline.
-
-- **Storage**  
-  - Interface language: `localStorage` key `bk_ui_lang`.  
-  - Statistics and history: `localStorage` key `bk_typing_stats_v1`.  
-  History is limited to the last 100 entries.
-
-- **Accessibility**  
-  The practice area and controls use ARIA attributes and semantic structure (e.g. `role="application"`, `aria-label`, `aria-live`) for screen readers.
+| | |
+| --- | --- |
+| **Languages** | RU / EN / ES / IT — UI + training words |
+| **Layouts** | JCUKEN (RU), QWERTY (EN·ES·IT) |
+| **Phrase length** | 10–15 words (optional 1–3 symbol-only chunks) |
+| **Translations** | Hover (desktop) or long-press (touch) on a word |
+| **Run** | Open **`index.html`** in this folder (or serve the **`blind-keyboard/`** directory) in your browser |
 
 ---
 
-## Summary
-
-| Feature | Description |
-|--------|-------------|
-| **Languages** | Interface and word sets: Russian, English, Spanish, Italian |
-| **Layouts** | JCUKEN (RU), QWERTY (EN/ES/IT) |
-| **Phrases** | 5–10 words per round, one language per round |
-| **Translations** | Hover (desktop) or long-press (touch) on a word to see RU/EN/ES/IT |
-| **Session stats** | Words, chars, correct, errors, time |
-| **Global stats** | Per-language totals: attempts, correct/wrong keystrokes, perfect/flawed phrases |
-| **History** | Last 100 completed phrases with language, time, errors |
-| **Persistence** | UI language and all stats in localStorage |
-| **Focus** | First keypress activates the practice area and counts as input |
-
-Open `blind-keyboard.html` in a modern browser to use the trainer.
+*Play-A-Tool · Blind keyboard simulator*

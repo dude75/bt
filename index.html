@@ -8,11 +8,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Touch typing trainer — RU, EN, ES, IT</title>
-  <meta name="description" content="Free blind typing trainer in your browser: phrases in Russian, English, Spanish or Italian, QWERTY and JCUKEN layouts, key highlights, stats. No install required." />
+  <meta name="description" content="Free blind typing trainer in your browser: 10–15 word phrases in Russian, English, Spanish or Italian, QWERTY and JCUKEN layouts, key highlights, stats. No install required." />
   <meta name="keywords" content="touch typing, blind typing, typing tutor, online keyboard trainer, QWERTY, JCUKEN, Russian English Spanish Italian typing" />
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Touch typing trainer — RU, EN, ES, IT" />
-  <meta property="og:description" content="Free blind typing trainer in browser: QWERTY and JCUKEN, RU/EN/ES/IT, stats. No install." />
+  <meta property="og:description" content="Free blind typing trainer in browser: 10–15 word phrases, QWERTY and JCUKEN, RU/EN/ES/IT, stats. No install." />
   <meta property="og:locale" content="en_US" />
   <meta property="og:locale:alternate" content="ru_RU" />
   <meta name="twitter:card" content="summary" />
@@ -24,7 +24,7 @@
     "@type": "WebApplication",
     "name": "Тренажёр слепой печати",
     "alternateName": "Blind typing trainer",
-    "description": "Онлайн-тренажёр слепой печати: русские и английские слова, QWERTY и ЙЦУКЕН.",
+    "description": "Онлайн-тренажёр слепой печати: фразы 10–15 слов, RU/EN/ES/IT, QWERTY и ЙЦУКЕН.",
     "applicationCategory": "EducationalApplication",
     "operatingSystem": "Any",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
@@ -43,6 +43,16 @@
       --accent-soft: rgba(88, 166, 255, 0.15);
       --home: #3fb950;
       --home-soft: rgba(63, 185, 80, 0.2);
+      /* Рамки клавиш и точки легенды — одни и те же цвета */
+      --finger-ring-lp: #e879f9;
+      --finger-ring-lr: #a78bfa;
+      --finger-ring-lm: #38bdf8;
+      --finger-ring-li: #22d3ee;
+      --finger-ring-ri: #4ade80;
+      --finger-ring-rm: #bef264;
+      --finger-ring-rr: #fb923c;
+      --finger-ring-rp: #f87171;
+      --finger-ring-th: #cbd5e1;
       --radius: 6px;
       --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
@@ -122,6 +132,26 @@
       margin-right: 0.25rem;
     }
 
+    .toolbar-mix-symbols {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.85rem;
+      color: var(--key-dim);
+    }
+    .toolbar-mix-symbols input[type="checkbox"] {
+      width: 1rem;
+      height: 1rem;
+      margin: 0;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .toolbar-mix-symbols label {
+      margin: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
     .seg {
       display: inline-flex;
       background: var(--surface);
@@ -152,20 +182,6 @@
       color: var(--key-text);
     }
 
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      font-size: 0.8rem;
-      color: var(--key-dim);
-    }
-
-    .legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
     .dot {
       width: 10px;
       height: 10px;
@@ -186,17 +202,121 @@
       margin-bottom: 0.25rem;
     }
 
+    .bk-disclosure {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin: 0;
+    }
+
+    .bk-disclosure-summary {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      list-style: none;
+      cursor: pointer;
+      padding: 0.2rem 0;
+      margin: 0;
+      border-radius: var(--radius);
+      color: var(--key-dim);
+      user-select: none;
+    }
+
+    .bk-disclosure-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .bk-disclosure-summary:focus {
+      outline: none;
+    }
+
+    .bk-disclosure-summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .bk-disclosure-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .bk-disclosure-key-icon {
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .bk-disclosure-chevron {
+      margin-left: auto;
+      flex-shrink: 0;
+      font-size: 0.6rem;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      color: var(--key-dim);
+      transition: transform 0.2s ease;
+    }
+
+    .bk-disclosure-chevron::before {
+      content: "▶";
+      display: block;
+    }
+
+    .bk-disclosure[open] .bk-disclosure-chevron {
+      transform: rotate(90deg);
+    }
+
+    .bk-disclosure-row .stats-page-title {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+
+    .history-section-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--key-text);
+    }
+
+    .bk-disclosure-row .history-section-title {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+
     .keyboard-section-title {
       margin: 0;
       font-size: 1rem;
       font-weight: 600;
       color: var(--key-dim);
+      flex: 1;
+      min-width: 0;
+      text-align: left;
     }
 
     .keyboard-wrap {
       width: 100%;
       max-width: 920px;
       background: var(--surface);
+      /* Схема клавиатуры: мягче контраст и обводки (не тянем на весь UI) */
+      --key-border: rgba(120, 140, 170, 0.22);
+      --key-bg: #273240;
+      --scheme-key-face-top: #2d3a4c;
+      --finger-ring-lp: #a882b0;
+      --finger-ring-lr: #8b84ad;
+      --finger-ring-lm: #5299b5;
+      --finger-ring-li: #4fa3ad;
+      --finger-ring-ri: #52a56e;
+      --finger-ring-rm: #9aad62;
+      --finger-ring-rr: #b8885e;
+      --finger-ring-rp: #b87272;
+      --finger-ring-th: #8e9dad;
       border: 1px solid var(--key-border);
       border-radius: 12px;
       padding: 1.25rem 1rem 1.5rem;
@@ -222,7 +342,11 @@
       min-width: 2.35rem;
       height: 2.6rem;
       padding: 0 0.35rem;
-      background: linear-gradient(180deg, #354a66 0%, var(--key-bg) 100%);
+      background: linear-gradient(
+        180deg,
+        var(--scheme-key-face-top, #354a66) 0%,
+        var(--key-bg) 100%
+      );
       border: 1px solid var(--key-border);
       border-radius: var(--radius);
       display: flex;
@@ -231,7 +355,7 @@
       justify-content: center;
       color: var(--key-text);
       user-select: none;
-      box-shadow: 0 2px 0 #1a2332;
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.55);
     }
 
     .key.w-1 { min-width: 2.35rem; }
@@ -254,8 +378,8 @@
     }
 
     .key.home-pos {
-      border-color: var(--home);
-      box-shadow: 0 0 0 1px var(--home-soft), 0 2px 0 #1a2332;
+      border-color: rgba(63, 185, 80, 0.55);
+      box-shadow: 0 0 0 1px rgba(63, 185, 80, 0.1), 0 1px 0 rgba(15, 20, 28, 0.55);
     }
 
     .key.home-pos .main::after {
@@ -268,11 +392,20 @@
       margin: 2px auto 0;
     }
 
-    .key.active {
+    .key.active,
+    .key.finger-lp.active,
+    .key.finger-lr.active,
+    .key.finger-lm.active,
+    .key.finger-li.active,
+    .key.finger-ri.active,
+    .key.finger-rm.active,
+    .key.finger-rr.active,
+    .key.finger-rp.active,
+    .key.finger-th.active {
       background: linear-gradient(180deg, #4a6fa8 0%, #3d5a8a 100%);
       border-color: var(--accent);
       transform: translateY(1px);
-      box-shadow: 0 1px 0 #1a2332;
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.55);
     }
 
     [data-layout="ru"] .key-en-only {
@@ -282,6 +415,106 @@
     [data-layout="en"] .key-ru-only {
       display: none;
     }
+
+    /* Зона пальца — тонкая 1px рамка; цвет = легенда */
+    .key.finger-lp {
+      border: 1px solid var(--finger-ring-lp);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-lr {
+      border: 1px solid var(--finger-ring-lr);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-lm {
+      border: 1px solid var(--finger-ring-lm);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-li {
+      border: 1px solid var(--finger-ring-li);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-ri {
+      border: 1px solid var(--finger-ring-ri);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-rm {
+      border: 1px solid var(--finger-ring-rm);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-rr {
+      border: 1px solid var(--finger-ring-rr);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-rp {
+      border: 1px solid var(--finger-ring-rp);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+    .key.finger-th {
+      border: 1px solid var(--finger-ring-th);
+      box-shadow: 0 1px 0 rgba(15, 20, 28, 0.5);
+    }
+
+    .finger-legend-block {
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--key-border);
+    }
+    .finger-legend-home {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      color: var(--key-dim);
+      margin: 0 0 0.65rem;
+    }
+    .finger-legend-home span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .finger-legend-word-hint {
+      margin: 0.65rem 0 0;
+      font-size: 0.72rem;
+      color: var(--key-dim);
+      line-height: 1.35;
+    }
+    .finger-legend-title {
+      margin: 0 0 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--key-dim);
+    }
+    .finger-legend-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.85rem;
+      font-size: 0.72rem;
+      color: var(--key-dim);
+      line-height: 1.35;
+    }
+    .finger-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .finger-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(0, 0, 0, 0.28);
+      box-sizing: border-box;
+    }
+    .finger-dot.finger-lp { background: var(--finger-ring-lp); }
+    .finger-dot.finger-lr { background: var(--finger-ring-lr); }
+    .finger-dot.finger-lm { background: var(--finger-ring-lm); }
+    .finger-dot.finger-li { background: var(--finger-ring-li); }
+    .finger-dot.finger-ri { background: var(--finger-ring-ri); }
+    .finger-dot.finger-rm { background: var(--finger-ring-rm); }
+    .finger-dot.finger-rr { background: var(--finger-ring-rr); }
+    .finger-dot.finger-rp { background: var(--finger-ring-rp); }
+    .finger-dot.finger-th { background: var(--finger-ring-th); }
 
     .practice-wrap {
       width: 100%;
@@ -515,11 +748,6 @@
       overflow-x: auto;
     }
 
-    .history-wrap h3 {
-      margin: 0 0 0.5rem;
-      font-size: 0.95rem;
-    }
-
     table.history {
       width: 100%;
       border-collapse: collapse;
@@ -629,9 +857,9 @@
     <div class="page-top-inner">
       <div class="page-top-main">
         <div class="page-top-heading">
-          <h1 id="i18n-h1">Слепая печать — тренажёр онлайн</h1>
+          <h1 id="i18n-h1">Blind typing — online trainer</h1>
           <p class="subtitle" id="i18n-subtitle">
-            За раз нужно набрать <strong>от 5 до 10 слов</strong> (только русские или только английские), через пробел. Раскладка в системе должна совпадать с выбранным языком. Клавиатура ниже показывает подсказку по клавишам. Статистика — внизу страницы.
+            Each round: <strong>10–15 words</strong> (space-separated). Optionally check the box below to add 1–3 chunks of <strong>digits and punctuation only</strong> (no mixed alphabets). Word meanings align across RU/EN/ES/IT. Match OS layout to the word language. Hover a segment (long-press on touch) for translations. Keyboard and stats below.
           </p>
         </div>
       </div>
@@ -659,7 +887,11 @@
           <button type="button" id="train-it" aria-pressed="false">Italiano</button>
         </div>
       </span>
-      <button type="button" class="btn" id="btn-new-word">Новая фраза (5–10 слов)</button>
+      <span class="toolbar-mix-symbols">
+        <input type="checkbox" id="bk-mix-symbols" />
+        <label for="bk-mix-symbols" id="i18n-mix-symbols-label">Цифры и знаки</label>
+      </span>
+      <button type="button" class="btn" id="btn-new-word">Новая фраза (10–15 слов)</button>
     </div>
     <div
       id="practice"
@@ -674,35 +906,109 @@
     <div class="done-msg" id="done-msg" role="status"></div>
   </div>
 
-  <div class="legend" id="i18n-legend">
-    <span><i class="dot home"></i> Метки на F и J (А и О на русской раскладке)</span>
-  </div>
-
   <section class="keyboard-section" aria-labelledby="i18n-keyboard-title">
-    <h2 class="keyboard-section-title" id="i18n-keyboard-title">Схема клавиатуры</h2>
-    <div class="keyboard-wrap" id="keyboard-wrap" data-layout="en">
-      <div class="keyboard" id="keyboard" aria-hidden="true"></div>
-    </div>
+    <details class="bk-disclosure" id="keyboard-disclosure" open>
+      <summary class="bk-disclosure-summary">
+        <span class="bk-disclosure-row">
+          <svg
+            class="bk-disclosure-key-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2" y="6" width="20" height="12" rx="2" />
+            <path d="M6 10h.5M10 10h.5M14 10h.5M18 10h.5" />
+            <path d="M7 14h10" />
+          </svg>
+          <h2 class="keyboard-section-title" id="i18n-keyboard-title">Схема клавиатуры</h2>
+          <span class="bk-disclosure-chevron" aria-hidden="true"></span>
+        </span>
+      </summary>
+      <div class="keyboard-wrap" id="keyboard-wrap" data-layout="en">
+        <div class="keyboard" id="keyboard" aria-hidden="true"></div>
+        <div class="finger-legend-block">
+          <div class="finger-legend-home" id="i18n-keyboard-home-hint"></div>
+          <h3 class="finger-legend-title" id="i18n-finger-legend-title"></h3>
+          <div class="finger-legend-grid" id="i18n-finger-legend-grid" aria-hidden="true"></div>
+          <p class="finger-legend-word-hint" id="i18n-word-hint"></p>
+        </div>
+      </div>
+    </details>
   </section>
 
-  <section class="stats-section" id="stats-section">
-    <h2 class="stats-page-title" id="i18n-stats-title">Статистика</h2>
-    <div class="stats-global" id="stats-global"></div>
-    <div class="history-wrap">
-      <h3 id="i18n-history-heading">Последние 100 попыток</h3>
-      <table class="history" id="history-table" aria-label="История">
-        <thead>
-          <tr>
-            <th id="i18n-th-text">Текст</th>
-            <th id="i18n-th-lang">Язык</th>
-            <th id="i18n-th-time">Время</th>
-            <th id="i18n-th-wrong">Ошибок</th>
-            <th id="i18n-th-result">Результат</th>
-          </tr>
-        </thead>
-        <tbody id="history-body"></tbody>
-      </table>
-    </div>
+  <section
+    class="stats-section"
+    id="stats-section"
+    aria-labelledby="i18n-stats-title i18n-history-heading"
+  >
+    <details class="bk-disclosure" id="stats-disclosure" open>
+      <summary class="bk-disclosure-summary">
+        <span class="bk-disclosure-row">
+          <svg
+            class="bk-disclosure-key-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 20V10M10 20V4M16 20v-6M22 20V14" />
+          </svg>
+          <h2 class="stats-page-title" id="i18n-stats-title">Статистика</h2>
+          <span class="bk-disclosure-chevron" aria-hidden="true"></span>
+        </span>
+      </summary>
+      <div class="stats-global" id="stats-global"></div>
+    </details>
+    <details class="bk-disclosure" id="history-disclosure" open>
+      <summary class="bk-disclosure-summary">
+        <span class="bk-disclosure-row">
+          <svg
+            class="bk-disclosure-key-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+          </svg>
+          <h3 class="history-section-title" id="i18n-history-heading">Последние 100 попыток</h3>
+          <span class="bk-disclosure-chevron" aria-hidden="true"></span>
+        </span>
+      </summary>
+      <div class="history-wrap">
+        <table class="history" id="history-table" aria-label="История">
+          <thead>
+            <tr>
+              <th id="i18n-th-text">Текст</th>
+              <th id="i18n-th-lang">Язык</th>
+              <th id="i18n-th-time">Время</th>
+              <th id="i18n-th-wrong">Ошибок</th>
+              <th id="i18n-th-result">Результат</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </details>
   </section>
   <script>
     (function () {
@@ -859,7 +1165,49 @@
         },
       };
 
-const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru":"слово","en":"word","es":"palabra","it":"parola"},{"ru":"мир","en":"world","es":"mundo","it":"mondo"},{"ru":"город","en":"city","es":"ciudad","it":"città"},{"ru":"вода","en":"water","es":"agua","it":"acqua"},{"ru":"солнце","en":"sun","es":"sol","it":"sole"},{"ru":"земля","en":"earth","es":"tierra","it":"terra"},{"ru":"небо","en":"sky","es":"cielo","it":"cielo"},{"ru":"день","en":"day","es":"día","it":"giorno"},{"ru":"ночь","en":"night","es":"noche","it":"notte"},{"ru":"время","en":"time","es":"tiempo","it":"tempo"},{"ru":"жизнь","en":"life","es":"vida","it":"vita"},{"ru":"человек","en":"person","es":"persona","it":"persona"},{"ru":"работа","en":"work","es":"trabajo","it":"lavoro"},{"ru":"семья","en":"family","es":"familia","it":"famiglia"},{"ru":"любовь","en":"love","es":"amor","it":"amore"},{"ru":"радость","en":"joy","es":"alegría","it":"gioia"},{"ru":"друг","en":"friend","es":"amigo","it":"amico"},{"ru":"враг","en":"enemy","es":"enemigo","it":"nemico"},{"ru":"книга","en":"book","es":"libro","it":"libro"},{"ru":"школа","en":"school","es":"escuela","it":"scuola"},{"ru":"учитель","en":"teacher","es":"maestro","it":"insegnante"},{"ru":"ребёнок","en":"child","es":"niño","it":"bambino"},{"ru":"мать","en":"mother","es":"madre","it":"madre"},{"ru":"отец","en":"father","es":"padre","it":"padre"},{"ru":"брат","en":"brother","es":"hermano","it":"fratello"},{"ru":"сестра","en":"sister","es":"hermana","it":"sorella"},{"ru":"сын","en":"son","es":"hijo","it":"figlio"},{"ru":"дочь","en":"daughter","es":"hija","it":"figlia"},{"ru":"рука","en":"hand","es":"mano","it":"mano"},{"ru":"нога","en":"leg","es":"pierna","it":"gamba"},{"ru":"голова","en":"head","es":"cabeza","it":"testa"},{"ru":"глаз","en":"eye","es":"ojo","it":"occhio"},{"ru":"ухо","en":"ear","es":"oreja","it":"orecchio"},{"ru":"рот","en":"mouth","es":"boca","it":"bocca"},{"ru":"зуб","en":"tooth","es":"diente","it":"dente"},{"ru":"язык","en":"tongue","es":"lengua","it":"lingua"},{"ru":"сердце","en":"heart","es":"corazón","it":"cuore"},{"ru":"душа","en":"soul","es":"alma","it":"anima"},{"ru":"лес","en":"forest","es":"bosque","it":"foresta"},{"ru":"поле","en":"field","es":"campo","it":"campo"},{"ru":"река","en":"river","es":"río","it":"fiume"},{"ru":"море","en":"sea","es":"mar","it":"mare"},{"ru":"гора","en":"mountain","es":"montaña","it":"montagna"},{"ru":"дорога","en":"road","es":"carretera","it":"strada"},{"ru":"машина","en":"car","es":"coche","it":"macchina"},{"ru":"собака","en":"dog","es":"perro","it":"cane"},{"ru":"кошка","en":"cat","es":"gato","it":"gatto"},{"ru":"птица","en":"bird","es":"pájaro","it":"uccello"},{"ru":"рыба","en":"fish","es":"pez","it":"pesce"},{"ru":"дерево","en":"tree","es":"árbol","it":"albero"},{"ru":"цветок","en":"flower","es":"flor","it":"fiore"},{"ru":"трава","en":"grass","es":"hierba","it":"erba"},{"ru":"камень","en":"stone","es":"piedra","it":"pietra"},{"ru":"огонь","en":"fire","es":"fuego","it":"fuoco"},{"ru":"дым","en":"smoke","es":"humo","it":"fumo"},{"ru":"звук","en":"sound","es":"sonido","it":"suono"},{"ru":"свет","en":"light","es":"luz","it":"luce"},{"ru":"тень","en":"shadow","es":"sombra","it":"ombra"},{"ru":"стол","en":"table","es":"mesa","it":"tavolo"},{"ru":"стул","en":"chair","es":"silla","it":"sedia"},{"ru":"окно","en":"window","es":"ventana","it":"finestra"},{"ru":"дверь","en":"door","es":"puerta","it":"porta"},{"ru":"стена","en":"wall","es":"muro","it":"parete"},{"ru":"пол","en":"floor","es":"suelo","it":"pavimento"},{"ru":"крыша","en":"roof","es":"techo","it":"tetto"},{"ru":"кухня","en":"kitchen","es":"cocina","it":"cucina"},{"ru":"комната","en":"room","es":"habitación","it":"stanza"},{"ru":"хлеб","en":"bread","es":"pan","it":"pane"},{"ru":"мясо","en":"meat","es":"carne","it":"carne"},{"ru":"молоко","en":"milk","es":"leche","it":"latte"},{"ru":"суп","en":"soup","es":"sopa","it":"zuppa"},{"ru":"чай","en":"tea","es":"té","it":"tè"},{"ru":"кофе","en":"coffee","es":"café","it":"caffè"},{"ru":"сок","en":"juice","es":"zumo","it":"succo"},{"ru":"яблоко","en":"apple","es":"manzana","it":"mela"},{"ru":"сыр","en":"cheese","es":"queso","it":"formaggio"},{"ru":"яйцо","en":"egg","es":"huevo","it":"uovo"},{"ru":"масло","en":"butter","es":"mantequilla","it":"burro"},{"ru":"соль","en":"salt","es":"sal","it":"sale"},{"ru":"сахар","en":"sugar","es":"azúcar","it":"zucchero"},{"ru":"рис","en":"rice","es":"arroz","it":"riso"},{"ru":"каша","en":"porridge","es":"gachas","it":"polenta"},{"ru":"пирог","en":"pie","es":"pastel","it":"torta"},{"ru":"картофель","en":"potato","es":"patata","it":"patata"},{"ru":"лук","en":"onion","es":"cebolla","it":"cipolla"},{"ru":"чеснок","en":"garlic","es":"ajo","it":"aglio"},{"ru":"помидор","en":"tomato","es":"tomate","it":"pomodoro"},{"ru":"огурец","en":"cucumber","es":"pepino","it":"cetriolo"},{"ru":"капуста","en":"cabbage","es":"col","it":"cavolo"},{"ru":"груша","en":"pear","es":"pera","it":"pera"},{"ru":"слива","en":"plum","es":"ciruela","it":"prugna"},{"ru":"вишня","en":"cherry","es":"cereza","it":"ciliegia"},{"ru":"смородина","en":"currant","es":"grosella","it":"ribes"},{"ru":"банан","en":"banana","es":"plátano","it":"banana"},{"ru":"апельсин","en":"orange","es":"naranja","it":"arancia"},{"ru":"лимон","en":"lemon","es":"limón","it":"limone"},{"ru":"орех","en":"nut","es":"nuez","it":"noce"},{"ru":"гриб","en":"mushroom","es":"seta","it":"fungo"},{"ru":"мед","en":"honey","es":"miel","it":"miele"},{"ru":"сметана","en":"sourcream","es":"nata","it":"panna"},{"ru":"творог","en":"curd","es":"requesón","it":"ricotta"},{"ru":"сон","en":"sleep","es":"sueño","it":"sonno"},{"ru":"сонный","en":"sleepy","es":"somnoliento","it":"assonnato"},{"ru":"бодрый","en":"cheerful","es":"alegre","it":"allegro"},{"ru":"голод","en":"hunger","es":"hambre","it":"fame"},{"ru":"жажда","en":"thirst","es":"sed","it":"sete"},{"ru":"сила","en":"strength","es":"fuerza","it":"forza"},{"ru":"слабость","en":"weakness","es":"debilidad","it":"debolezza"},{"ru":"правда","en":"truth","es":"verdad","it":"verità"},{"ru":"ложь","en":"lie","es":"mentira","it":"bugia"},{"ru":"война","en":"war","es":"guerra","it":"guerra"},{"ru":"закон","en":"law","es":"ley","it":"legge"},{"ru":"народ","en":"people","es":"pueblo","it":"popolo"},{"ru":"власть","en":"power","es":"poder","it":"potere"},{"ru":"память","en":"memory","es":"memoria","it":"memoria"},{"ru":"мысль","en":"thought","es":"pensamiento","it":"pensiero"},{"ru":"речь","en":"speech","es":"discurso","it":"discorso"},{"ru":"песня","en":"song","es":"canción","it":"canzone"},{"ru":"музыка","en":"music","es":"música","it":"musica"},{"ru":"танец","en":"dance","es":"baile","it":"danza"},{"ru":"игра","en":"game","es":"juego","it":"gioco"},{"ru":"смех","en":"laughter","es":"risa","it":"risata"},{"ru":"слеза","en":"tear","es":"lágrima","it":"lacrima"},{"ru":"страх","en":"fear","es":"miedo","it":"paura"},{"ru":"надежда","en":"hope","es":"esperanza","it":"speranza"},{"ru":"вера","en":"faith","es":"fe","it":"fede"},{"ru":"сомнение","en":"doubt","es":"duda","it":"dubbio"},{"ru":"гордость","en":"pride","es":"orgullo","it":"orgoglio"},{"ru":"стыд","en":"shame","es":"vergüenza","it":"vergogna"},{"ru":"совесть","en":"conscience","es":"conciencia","it":"coscienza"},{"ru":"месть","en":"revenge","es":"venganza","it":"vendetta"},{"ru":"прощение","en":"forgiveness","es":"perdón","it":"perdono"},{"ru":"награда","en":"reward","es":"premio","it":"premio"},{"ru":"наказание","en":"punishment","es":"castigo","it":"punizione"},{"ru":"помощь","en":"help","es":"ayuda","it":"aiuto"},{"ru":"вред","en":"harm","es":"daño","it":"danno"},{"ru":"совет","en":"advice","es":"consejo","it":"consiglio"},{"ru":"обман","en":"deceit","es":"engaño","it":"inganno"},{"ru":"честность","en":"honesty","es":"honestidad","it":"onestà"},{"ru":"дружба","en":"friendship","es":"amistad","it":"amicizia"},{"ru":"вражда","en":"hostility","es":"hostilidad","it":"ostilità"},{"ru":"уважение","en":"respect","es":"respeto","it":"rispetto"},{"ru":"презрение","en":"contempt","es":"desprecio","it":"disprezzo"},{"ru":"милосердие","en":"mercy","es":"misericordia","it":"misericordia"},{"ru":"жестокость","en":"cruelty","es":"crueldad","it":"crueltà"},{"ru":"начало","en":"beginning","es":"principio","it":"inizio"},{"ru":"конец","en":"end","es":"fin","it":"fine"},{"ru":"середина","en":"middle","es":"medio","it":"mezzo"},{"ru":"путь","en":"path","es":"camino","it":"cammino"},{"ru":"тропа","en":"trail","es":"sendero","it":"sentiero"},{"ru":"мост","en":"bridge","es":"puente","it":"ponte"},{"ru":"озеро","en":"lake","es":"lago","it":"lago"},{"ru":"болото","en":"swamp","es":"pantano","it":"palude"},{"ru":"степь","en":"steppe","es":"estepa","it":"steppa"},{"ru":"пустыня","en":"desert","es":"desierto","it":"deserto"},{"ru":"долина","en":"valley","es":"valle","it":"valle"},{"ru":"пещера","en":"cave","es":"cueva","it":"grotta"},{"ru":"песок","en":"sand","es":"arena","it":"sabbia"},{"ru":"глина","en":"clay","es":"arcilla","it":"argilla"},{"ru":"золото","en":"gold","es":"oro","it":"oro"},{"ru":"серебро","en":"silver","es":"plata","it":"argento"},{"ru":"медь","en":"copper","es":"cobre","it":"rame"},{"ru":"железо","en":"iron","es":"hierro","it":"ferro"},{"ru":"сталь","en":"steel","es":"acero","it":"acciaio"},{"ru":"доска","en":"board","es":"tabla","it":"tavola"},{"ru":"лист","en":"leaf","es":"hoja","it":"foglia"},{"ru":"ветка","en":"branch","es":"rama","it":"ramo"},{"ru":"корень","en":"root","es":"raíz","it":"radice"},{"ru":"плод","en":"fruit","es":"fruta","it":"frutto"},{"ru":"семя","en":"seed","es":"semilla","it":"seme"},{"ru":"росток","en":"sprout","es":"brote","it":"germoglio"},{"ru":"ягода","en":"berry","es":"baya","it":"bacca"},{"ru":"куст","en":"bush","es":"arbusto","it":"cespuglio"},{"ru":"листва","en":"foliage","es":"follaje","it":"fronde"},{"ru":"кора","en":"bark","es":"corteza","it":"corteccia"},{"ru":"ветвь","en":"bough","es":"rama","it":"ramo"},{"ru":"ствол","en":"trunk","es":"tronco","it":"tronco"},{"ru":"цвет","en":"blossom","es":"flor","it":"fiore"},{"ru":"лепесток","en":"petal","es":"pétalo","it":"petalo"},{"ru":"тычинка","en":"stamen","es":"estambre","it":"stame"},{"ru":"пыльца","en":"pollen","es":"polen","it":"polline"},{"ru":"пчела","en":"bee","es":"abeja","it":"ape"},{"ru":"оса","en":"wasp","es":"avispa","it":"vespa"},{"ru":"муравей","en":"ant","es":"hormiga","it":"formica"},{"ru":"паук","en":"spider","es":"araña","it":"ragno"},{"ru":"муха","en":"fly","es":"mosca","it":"mosca"},{"ru":"комар","en":"mosquito","es":"mosquito","it":"zanzara"},{"ru":"бабочка","en":"butterfly","es":"mariposa","it":"farfalla"},{"ru":"жук","en":"beetle","es":"escarabajo","it":"scarabeo"},{"ru":"змея","en":"snake","es":"serpiente","it":"serpente"},{"ru":"ящерица","en":"lizard","es":"lagarto","it":"lucertola"},{"ru":"лягушка","en":"frog","es":"rana","it":"rana"},{"ru":"черепаха","en":"turtle","es":"tortuga","it":"tartaruga"},{"ru":"кролик","en":"rabbit","es":"conejo","it":"coniglio"},{"ru":"белка","en":"squirrel","es":"ardilla","it":"scoiattolo"},{"ru":"мышь","en":"mouse","es":"ratón","it":"topo"},{"ru":"крыса","en":"rat","es":"rata","it":"ratto"},{"ru":"лошадь","en":"horse","es":"caballo","it":"cavallo"},{"ru":"корова","en":"cow","es":"vaca","it":"mucca"},{"ru":"свинья","en":"pig","es":"cerdo","it":"maiale"},{"ru":"овца","en":"sheep","es":"oveja","it":"pecora"},{"ru":"коза","en":"goat","es":"cabra","it":"capra"},{"ru":"баран","en":"ram","es":"carnero","it":"montone"},{"ru":"петух","en":"rooster","es":"gallo","it":"gallo"},{"ru":"курица","en":"hen","es":"gallina","it":"gallina"},{"ru":"утка","en":"duck","es":"pato","it":"anatra"},{"ru":"гусь","en":"goose","es":"ganso","it":"oca"},{"ru":"индюк","en":"turkey","es":"pavo","it":"tacchino"},{"ru":"голубь","en":"pigeon","es":"paloma","it":"piccione"},{"ru":"ворона","en":"crow","es":"cuervo","it":"corvo"},{"ru":"сорока","en":"magpie","es":"urraca","it":"gazza"},{"ru":"ласточка","en":"swallow","es":"golondrina","it":"rondine"},{"ru":"жаворонок","en":"lark","es":"alondra","it":"allodola"},{"ru":"соловей","en":"nightingale","es":"ruiseñor","it":"usignolo"},{"ru":"синица","en":"tit","es":"carbonero","it":"cinciallegra"},{"ru":"воробей","en":"sparrow","es":"gorrión","it":"passero"},{"ru":"орёл","en":"eagle","es":"águila","it":"aquila"},{"ru":"сокол","en":"falcon","es":"halcón","it":"falco"},{"ru":"ястреб","en":"hawk","es":"azor","it":"sparviero"},{"ru":"сова","en":"owl","es":"búho","it":"gufo"},{"ru":"лебедь","en":"swan","es":"cisne","it":"cigno"},{"ru":"аист","en":"stork","es":"cigüeña","it":"cicogna"},{"ru":"цапля","en":"heron","es":"garza","it":"airone"},{"ru":"чайка","en":"gull","es":"gaviota","it":"gabbiano"},{"ru":"щука","en":"pike","es":"lucio","it":"luccio"},{"ru":"окунь","en":"perch","es":"perca","it":"persico"},{"ru":"карась","en":"carp","es":"carpa","it":"carpa"},{"ru":"лещ","en":"bream","es":"brema","it":"bream"},{"ru":"судак","en":"zander","es":"lucioperca","it":"sandre"},{"ru":"треска","en":"cod","es":"bacalao","it":"merluzzo"},{"ru":"сельдь","en":"herring","es":"arenque","it":"aringa"},{"ru":"килька","en":"sprat","es":"espadín","it":"spratto"},{"ru":"креветка","en":"shrimp","es":"camarón","it":"gambero"},{"ru":"краб","en":"crab","es":"cangrejo","it":"granchio"},{"ru":"осьминог","en":"octopus","es":"pulpo","it":"polpo"},{"ru":"кальмар","en":"squid","es":"calamar","it":"calamaro"},{"ru":"медуза","en":"jellyfish","es":"medusa","it":"medusa"},{"ru":"акула","en":"shark","es":"tiburón","it":"squalo"},{"ru":"кит","en":"whale","es":"ballena","it":"balena"},{"ru":"дельфин","en":"dolphin","es":"delfín","it":"delfino"},{"ru":"тюлень","en":"seal","es":"foca","it":"foca"},{"ru":"морж","en":"walrus","es":"morsa","it":"tricheco"},{"ru":"медведь","en":"bear","es":"oso","it":"orso"},{"ru":"волк","en":"wolf","es":"lobo","it":"lupo"},{"ru":"лиса","en":"fox","es":"zorro","it":"volpe"},{"ru":"заяц","en":"hare","es":"liebre","it":"lepre"},{"ru":"ёж","en":"hedgehog","es":"erizo","it":"riccio"},{"ru":"бобр","en":"beaver","es":"castor","it":"castoro"},{"ru":"выдра","en":"otter","es":"nutria","it":"lontra"},{"ru":"норка","en":"mink","es":"visón","it":"visone"},{"ru":"хорёк","en":"ferret","es":"hurón","it":"furetto"},{"ru":"барсук","en":"badger","es":"tejón","it":"tasso"},{"ru":"енот","en":"raccoon","es":"mapache","it":"procione"},{"ru":"лось","en":"elk","es":"alce","it":"alce"},{"ru":"олень","en":"deer","es":"ciervo","it":"cervo"},{"ru":"кабан","en":"boar","es":"jabalí","it":"cinghiale"},{"ru":"косуля","en":"roedeer","es":"corzo","it":"capriolo"},{"ru":"зубр","en":"bison","es":"bisonte","it":"bisonte"},{"ru":"зайца","en":"hareacc","es":"liebre","it":"lepre"},{"ru":"бурундук","en":"chipmunk","es":"ardilla","it":"tamia"},{"ru":"и","en":"and","es":"y","it":"e"},{"ru":"в","en":"in","es":"en","it":"in"},{"ru":"не","en":"not","es":"no","it":"non"},{"ru":"на","en":"on","es":"en","it":"su"},{"ru":"что","en":"what","es":"qué","it":"che"},{"ru":"с","en":"with","es":"con","it":"con"},{"ru":"как","en":"how","es":"como","it":"come"},{"ru":"по","en":"along","es":"por","it":"per"},{"ru":"из","en":"from","es":"de","it":"da"},{"ru":"у","en":"at","es":"a","it":"a"},{"ru":"за","en":"behind","es":"detrás","it":"dietro"},{"ru":"к","en":"to","es":"a","it":"a"},{"ru":"о","en":"about","es":"de","it":"su"},{"ru":"да","en":"yes","es":"sí","it":"sì"},{"ru":"но","en":"but","es":"pero","it":"ma"},{"ru":"а","en":"ah","es":"y","it":"e"},{"ru":"же","en":"then","es":"pues","it":"dunque"},{"ru":"ли","en":"whether","es":"si","it":"se"},{"ru":"бы","en":"would","es":"-","it":"-"},{"ru":"или","en":"or","es":"o","it":"o"},{"ru":"то","en":"that","es":"eso","it":"quello"},{"ru":"все","en":"all","es":"todo","it":"tutto"},{"ru":"ещё","en":"still","es":"aún","it":"ancora"},{"ru":"уже","en":"already","es":"ya","it":"già"},{"ru":"очень","en":"very","es":"muy","it":"molto"},{"ru":"можно","en":"may","es":"se","it":"si"},{"ru":"если","en":"if","es":"si","it":"se"},{"ru":"только","en":"only","es":"solo","it":"solo"},{"ru":"ему","en":"tohim","es":"él","it":"lui"},{"ru":"её","en":"toher","es":"ella","it":"lei"},{"ru":"им","en":"tothem","es":"les","it":"loro"},{"ru":"нас","en":"us","es":"nos","it":"noi"},{"ru":"вас","en":"youpl","es":"os","it":"voi"},{"ru":"их","en":"them","es":"ellos","it":"loro"},{"ru":"этот","en":"thism","es":"este","it":"questo"},{"ru":"эта","en":"thisf","es":"esta","it":"questa"},{"ru":"это","en":"thisn","es":"esto","it":"questo"},{"ru":"эти","en":"these","es":"estos","it":"questi"},{"ru":"один","en":"one","es":"uno","it":"uno"},{"ru":"два","en":"two","es":"dos","it":"due"},{"ru":"три","en":"three","es":"tres","it":"tre"},{"ru":"много","en":"many","es":"muchos","it":"molti"},{"ru":"мало","en":"few","es":"pocos","it":"pochi"},{"ru":"нет","en":"noex","es":"no","it":"no"},{"ru":"здесь","en":"here","es":"aquí","it":"qui"},{"ru":"там","en":"there","es":"allí","it":"là"},{"ru":"тут","en":"here2","es":"acá","it":"qua"},{"ru":"потом","en":"then2","es":"luego","it":"poi"},{"ru":"опять","en":"again","es":"otra","it":"ancora"},{"ru":"вновь","en":"anew","es":"nuevo","it":"nuovo"},{"ru":"вместе","en":"together","es":"juntos","it":"insieme"},{"ru":"назад","en":"back","es":"atrás","it":"indietro"},{"ru":"впереди","en":"ahead","es":"adelante","it":"avanti"},{"ru":"внутри","en":"inside","es":"dentro","it":"dentro"},{"ru":"вокруг","en":"around","es":"alrededor","it":"intorno"},{"ru":"вместо","en":"instead","es":"lugar","it":"invece"},{"ru":"сверху","en":"above","es":"encima","it":"sopra"},{"ru":"снизу","en":"below","es":"debajo","it":"sotto"},{"ru":"спереди","en":"infront","es":"delante","it":"davanti"},{"ru":"сзади","en":"behind2","es":"detrás","it":"dietro"},{"ru":"около","en":"near","es":"cerca","it":"vicino"},{"ru":"среди","en":"among","es":"entre","it":"fra"},{"ru":"между","en":"between","es":"entre","it":"tra"},{"ru":"через","en":"through","es":"vía","it":"attraverso"},{"ru":"без","en":"without","es":"sin","it":"senza"},{"ru":"при","en":"at2","es":"en","it":"a"},{"ru":"над","en":"over","es":"sobre","it":"sopra"},{"ru":"под","en":"under","es":"bajo","it":"sotto"},{"ru":"про","en":"about2","es":"sobre","it":"su"},{"ru":"для","en":"for","es":"para","it":"per"},{"ru":"от","en":"from2","es":"de","it":"da"},{"ru":"до","en":"until","es":"hasta","it":"fino"},{"ru":"ради","en":"for2","es":"por","it":"per"},{"ru":"благодаря","en":"thanks","es":"gracias","it":"grazie"},{"ru":"вопреки","en":"despite","es":"pesar","it":"nonostante"},{"ru":"согласно","en":"according","es":"según","it":"secondo"},{"ru":"включая","en":"including","es":"incluyendo","it":"incluso"},{"ru":"исключая","en":"excluding","es":"excluyendo","it":"escluso"},{"ru":"насчёт","en":"about3","es":"acerca","it":"circa"},{"ru":"вроде","en":"like","es":"como","it":"come"},{"ru":"словно","en":"asif","es":"como si","it":"come se"},{"ru":"будто","en":"exactly","es":"exacto","it":"esattamente"},{"ru":"точно","en":"evenly","es":"justo","it":"pari"},{"ru":"ровно","en":"almost","es":"casi","it":"quasi"},{"ru":"почти","en":"barely","es":"apenas","it":"a malapena"},{"ru":"едва","en":"hardly","es":"apenas","it":"difficile"},{"ru":"вряд","en":"probably","es":"probable","it":"probabilmente"},{"ru":"наверное","en":"possibly","es":"posible","it":"possibilmente"},{"ru":"возможно","en":"likely","es":"probable","it":"probabile"},{"ru":"вероятно","en":"ofcourse","es":"claro","it":"certo"},{"ru":"конечно","en":"naturally","es":"natural","it":"naturalmente"},{"ru":"разумеется","en":"really","es":"realmente","it":"davvero"},{"ru":"действительно","en":"namely","es":"es decir","it":"cioè"},{"ru":"именно","en":"only2","es":"solo","it":"solo"},{"ru":"лишь","en":"exclusively","es":"exclusivo","it":"esclusivamente"},{"ru":"исключительно","en":"especially","es":"especial","it":"specialmente"},{"ru":"особенно","en":"main","es":"principal","it":"principale"},{"ru":"главное","en":"important","es":"importante","it":"importante"},{"ru":"важно","en":"needed","es":"necesario","it":"serve"},{"ru":"нужно","en":"must","es":"debe","it":"deve"},{"ru":"надо","en":"should","es":"debería","it":"dovrebbe"},{"ru":"следует","en":"ought","es":"conviene","it":"conviene"},{"ru":"мочь","en":"can","es":"puede","it":"può"},{"ru":"хотеть","en":"want","es":"quiere","it":"vuole"},{"ru":"думать","en":"think","es":"piensa","it":"pensa"},{"ru":"знать","en":"know","es":"sabe","it":"sa"},{"ru":"верить","en":"believe","es":"cree","it":"crede"},{"ru":"надеяться","en":"hopeh","es":"espera","it":"spera"},{"ru":"бояться","en":"fearh","es":"teme","it":"teme"},{"ru":"любить","en":"loveh","es":"ama","it":"ama"},{"ru":"ненавидеть","en":"hate","es":"odia","it":"odia"},{"ru":"помнить","en":"remember","es":"recuerda","it":"ricorda"},{"ru":"забывать","en":"forget","es":"olvida","it":"dimentica"},{"ru":"понимать","en":"understand","es":"entiende","it":"capisce"},{"ru":"объяснять","en":"explain","es":"explica","it":"spiega"},{"ru":"спрашивать","en":"ask","es":"pregunta","it":"chiede"},{"ru":"отвечать","en":"answer","es":"responde","it":"risponde"},{"ru":"молчать","en":"silent","es":"callar","it":"tacere"},{"ru":"кричать","en":"shout","es":"gritar","it":"gridare"}];
+const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru":"слово","en":"word","es":"palabra","it":"parola"},{"ru":"мир","en":"world","es":"mundo","it":"mondo"},{"ru":"город","en":"city","es":"ciudad","it":"città"},{"ru":"вода","en":"water","es":"agua","it":"acqua"},{"ru":"солнце","en":"sun","es":"sol","it":"sole"},{"ru":"земля","en":"earth","es":"tierra","it":"terra"},{"ru":"небо","en":"sky","es":"cielo","it":"cielo"},{"ru":"день","en":"day","es":"día","it":"giorno"},{"ru":"ночь","en":"night","es":"noche","it":"notte"},{"ru":"время","en":"time","es":"tiempo","it":"tempo"},{"ru":"жизнь","en":"life","es":"vida","it":"vita"},{"ru":"человек","en":"person","es":"persona","it":"persona"},{"ru":"работа","en":"work","es":"trabajo","it":"lavoro"},{"ru":"семья","en":"family","es":"familia","it":"famiglia"},{"ru":"любовь","en":"love","es":"amor","it":"amore"},{"ru":"радость","en":"joy","es":"alegría","it":"gioia"},{"ru":"друг","en":"friend","es":"amigo","it":"amico"},{"ru":"враг","en":"enemy","es":"enemigo","it":"nemico"},{"ru":"книга","en":"book","es":"libro","it":"libro"},{"ru":"школа","en":"school","es":"escuela","it":"scuola"},{"ru":"учитель","en":"teacher","es":"maestro","it":"insegnante"},{"ru":"ребёнок","en":"child","es":"niño","it":"bambino"},{"ru":"мать","en":"mother","es":"madre","it":"madre"},{"ru":"отец","en":"father","es":"padre","it":"padre"},{"ru":"брат","en":"brother","es":"hermano","it":"fratello"},{"ru":"сестра","en":"sister","es":"hermana","it":"sorella"},{"ru":"сын","en":"son","es":"hijo","it":"figlio"},{"ru":"дочь","en":"daughter","es":"hija","it":"figlia"},{"ru":"рука","en":"hand","es":"mano","it":"mano"},{"ru":"нога","en":"leg","es":"pierna","it":"gamba"},{"ru":"голова","en":"head","es":"cabeza","it":"testa"},{"ru":"глаз","en":"eye","es":"ojo","it":"occhio"},{"ru":"ухо","en":"ear","es":"oreja","it":"orecchio"},{"ru":"рот","en":"mouth","es":"boca","it":"bocca"},{"ru":"зуб","en":"tooth","es":"diente","it":"dente"},{"ru":"язык","en":"tongue","es":"lengua","it":"lingua"},{"ru":"сердце","en":"heart","es":"corazón","it":"cuore"},{"ru":"душа","en":"soul","es":"alma","it":"anima"},{"ru":"лес","en":"forest","es":"bosque","it":"foresta"},{"ru":"поле","en":"field","es":"campo","it":"campo"},{"ru":"река","en":"river","es":"río","it":"fiume"},{"ru":"море","en":"sea","es":"mar","it":"mare"},{"ru":"гора","en":"mountain","es":"montaña","it":"montagna"},{"ru":"дорога","en":"road","es":"carretera","it":"strada"},{"ru":"машина","en":"car","es":"coche","it":"macchina"},{"ru":"собака","en":"dog","es":"perro","it":"cane"},{"ru":"кошка","en":"cat","es":"gato","it":"gatto"},{"ru":"птица","en":"bird","es":"pájaro","it":"uccello"},{"ru":"рыба","en":"fish","es":"pez","it":"pesce"},{"ru":"дерево","en":"tree","es":"árbol","it":"albero"},{"ru":"цветок","en":"flower","es":"flor","it":"fiore"},{"ru":"трава","en":"grass","es":"hierba","it":"erba"},{"ru":"камень","en":"stone","es":"piedra","it":"pietra"},{"ru":"огонь","en":"fire","es":"fuego","it":"fuoco"},{"ru":"дым","en":"smoke","es":"humo","it":"fumo"},{"ru":"звук","en":"sound","es":"sonido","it":"suono"},{"ru":"свет","en":"light","es":"luz","it":"luce"},{"ru":"тень","en":"shadow","es":"sombra","it":"ombra"},{"ru":"стол","en":"table","es":"mesa","it":"tavolo"},{"ru":"стул","en":"chair","es":"silla","it":"sedia"},{"ru":"окно","en":"window","es":"ventana","it":"finestra"},{"ru":"дверь","en":"door","es":"puerta","it":"porta"},{"ru":"стена","en":"wall","es":"muro","it":"parete"},{"ru":"пол","en":"floor","es":"suelo","it":"pavimento"},{"ru":"крыша","en":"roof","es":"techo","it":"tetto"},{"ru":"кухня","en":"kitchen","es":"cocina","it":"cucina"},{"ru":"комната","en":"room","es":"habitación","it":"stanza"},{"ru":"хлеб","en":"bread","es":"pan","it":"pane"},{"ru":"мясо","en":"meat","es":"carne","it":"carne"},{"ru":"молоко","en":"milk","es":"leche","it":"latte"},{"ru":"суп","en":"soup","es":"sopa","it":"zuppa"},{"ru":"чай","en":"tea","es":"té","it":"tè"},{"ru":"кофе","en":"coffee","es":"café","it":"caffè"},{"ru":"сок","en":"juice","es":"zumo","it":"succo"},{"ru":"яблоко","en":"apple","es":"manzana","it":"mela"},{"ru":"сыр","en":"cheese","es":"queso","it":"formaggio"},{"ru":"яйцо","en":"egg","es":"huevo","it":"uovo"},{"ru":"масло","en":"butter","es":"mantequilla","it":"burro"},{"ru":"соль","en":"salt","es":"sal","it":"sale"},{"ru":"сахар","en":"sugar","es":"azúcar","it":"zucchero"},{"ru":"рис","en":"rice","es":"arroz","it":"riso"},{"ru":"каша","en":"porridge","es":"gachas","it":"polenta"},{"ru":"пирог","en":"pie","es":"pastel","it":"torta"},{"ru":"картофель","en":"potato","es":"patata","it":"patata"},{"ru":"лук","en":"onion","es":"cebolla","it":"cipolla"},{"ru":"чеснок","en":"garlic","es":"ajo","it":"aglio"},{"ru":"помидор","en":"tomato","es":"tomate","it":"pomodoro"},{"ru":"огурец","en":"cucumber","es":"pepino","it":"cetriolo"},{"ru":"капуста","en":"cabbage","es":"col","it":"cavolo"},{"ru":"груша","en":"pear","es":"pera","it":"pera"},{"ru":"слива","en":"plum","es":"ciruela","it":"prugna"},{"ru":"вишня","en":"cherry","es":"cereza","it":"ciliegia"},{"ru":"смородина","en":"currant","es":"grosella","it":"ribes"},{"ru":"банан","en":"banana","es":"plátano","it":"banana"},{"ru":"апельсин","en":"orange","es":"naranja","it":"arancia"},{"ru":"лимон","en":"lemon","es":"limón","it":"limone"},{"ru":"орех","en":"nut","es":"nuez","it":"noce"},{"ru":"гриб","en":"mushroom","es":"seta","it":"fungo"},{"ru":"мед","en":"honey","es":"miel","it":"miele"},{"ru":"сметана","en":"sourcream","es":"nata","it":"panna"},{"ru":"творог","en":"curd","es":"requesón","it":"ricotta"},{"ru":"сон","en":"sleep","es":"sueño","it":"sonno"},{"ru":"сонный","en":"sleepy","es":"somnoliento","it":"assonnato"},{"ru":"бодрый","en":"cheerful","es":"alegre","it":"allegro"},{"ru":"голод","en":"hunger","es":"hambre","it":"fame"},{"ru":"жажда","en":"thirst","es":"sed","it":"sete"},{"ru":"сила","en":"strength","es":"fuerza","it":"forza"},{"ru":"слабость","en":"weakness","es":"debilidad","it":"debolezza"},{"ru":"правда","en":"truth","es":"verdad","it":"verità"},{"ru":"ложь","en":"lie","es":"mentira","it":"bugia"},{"ru":"война","en":"war","es":"guerra","it":"guerra"},{"ru":"закон","en":"law","es":"ley","it":"legge"},{"ru":"народ","en":"people","es":"pueblo","it":"popolo"},{"ru":"власть","en":"power","es":"poder","it":"potere"},{"ru":"память","en":"memory","es":"memoria","it":"memoria"},{"ru":"мысль","en":"thought","es":"pensamiento","it":"pensiero"},{"ru":"речь","en":"speech","es":"discurso","it":"discorso"},{"ru":"песня","en":"song","es":"canción","it":"canzone"},{"ru":"музыка","en":"music","es":"música","it":"musica"},{"ru":"танец","en":"dance","es":"baile","it":"danza"},{"ru":"игра","en":"game","es":"juego","it":"gioco"},{"ru":"смех","en":"laughter","es":"risa","it":"risata"},{"ru":"слеза","en":"tear","es":"lágrima","it":"lacrima"},{"ru":"страх","en":"fear","es":"miedo","it":"paura"},{"ru":"надежда","en":"hope","es":"esperanza","it":"speranza"},{"ru":"вера","en":"faith","es":"fe","it":"fede"},{"ru":"сомнение","en":"doubt","es":"duda","it":"dubbio"},{"ru":"гордость","en":"pride","es":"orgullo","it":"orgoglio"},{"ru":"стыд","en":"shame","es":"vergüenza","it":"vergogna"},{"ru":"совесть","en":"conscience","es":"conciencia","it":"coscienza"},{"ru":"месть","en":"revenge","es":"venganza","it":"vendetta"},{"ru":"прощение","en":"forgiveness","es":"perdón","it":"perdono"},{"ru":"награда","en":"reward","es":"premio","it":"premio"},{"ru":"наказание","en":"punishment","es":"castigo","it":"punizione"},{"ru":"помощь","en":"help","es":"ayuda","it":"aiuto"},{"ru":"вред","en":"harm","es":"daño","it":"danno"},{"ru":"совет","en":"advice","es":"consejo","it":"consiglio"},{"ru":"обман","en":"deceit","es":"engaño","it":"inganno"},{"ru":"честность","en":"honesty","es":"honestidad","it":"onestà"},{"ru":"дружба","en":"friendship","es":"amistad","it":"amicizia"},{"ru":"вражда","en":"hostility","es":"hostilidad","it":"ostilità"},{"ru":"уважение","en":"respect","es":"respeto","it":"rispetto"},{"ru":"презрение","en":"contempt","es":"desprecio","it":"disprezzo"},{"ru":"милосердие","en":"mercy","es":"misericordia","it":"misericordia"},{"ru":"жестокость","en":"cruelty","es":"crueldad","it":"crueltà"},{"ru":"начало","en":"beginning","es":"principio","it":"inizio"},{"ru":"конец","en":"end","es":"fin","it":"fine"},{"ru":"середина","en":"middle","es":"medio","it":"mezzo"},{"ru":"путь","en":"path","es":"camino","it":"cammino"},{"ru":"тропа","en":"trail","es":"sendero","it":"sentiero"},{"ru":"мост","en":"bridge","es":"puente","it":"ponte"},{"ru":"озеро","en":"lake","es":"lago","it":"lago"},{"ru":"болото","en":"swamp","es":"pantano","it":"palude"},{"ru":"степь","en":"steppe","es":"estepa","it":"steppa"},{"ru":"пустыня","en":"desert","es":"desierto","it":"deserto"},{"ru":"долина","en":"valley","es":"valle","it":"valle"},{"ru":"пещера","en":"cave","es":"cueva","it":"grotta"},{"ru":"песок","en":"sand","es":"arena","it":"sabbia"},{"ru":"глина","en":"clay","es":"arcilla","it":"argilla"},{"ru":"золото","en":"gold","es":"oro","it":"oro"},{"ru":"серебро","en":"silver","es":"plata","it":"argento"},{"ru":"медь","en":"copper","es":"cobre","it":"rame"},{"ru":"железо","en":"iron","es":"hierro","it":"ferro"},{"ru":"сталь","en":"steel","es":"acero","it":"acciaio"},{"ru":"доска","en":"board","es":"tabla","it":"tavola"},{"ru":"лист","en":"leaf","es":"hoja","it":"foglia"},{"ru":"ветка","en":"branch","es":"rama","it":"ramo"},{"ru":"корень","en":"root","es":"raíz","it":"radice"},{"ru":"плод","en":"fruit","es":"fruta","it":"frutto"},{"ru":"семя","en":"seed","es":"semilla","it":"seme"},{"ru":"росток","en":"sprout","es":"brote","it":"germoglio"},{"ru":"ягода","en":"berry","es":"baya","it":"bacca"},{"ru":"куст","en":"bush","es":"arbusto","it":"cespuglio"},{"ru":"листва","en":"foliage","es":"follaje","it":"fronde"},{"ru":"кора","en":"bark","es":"corteza","it":"corteccia"},{"ru":"ветвь","en":"bough","es":"rama","it":"ramo"},{"ru":"ствол","en":"trunk","es":"tronco","it":"tronco"},{"ru":"цвет","en":"blossom","es":"flor","it":"fiore"},{"ru":"лепесток","en":"petal","es":"pétalo","it":"petalo"},{"ru":"тычинка","en":"stamen","es":"estambre","it":"stame"},{"ru":"пыльца","en":"pollen","es":"polen","it":"polline"},{"ru":"пчела","en":"bee","es":"abeja","it":"ape"},{"ru":"оса","en":"wasp","es":"avispa","it":"vespa"},{"ru":"муравей","en":"ant","es":"hormiga","it":"formica"},{"ru":"паук","en":"spider","es":"araña","it":"ragno"},{"ru":"муха","en":"fly","es":"mosca","it":"mosca"},{"ru":"комар","en":"mosquito","es":"mosquito","it":"zanzara"},{"ru":"бабочка","en":"butterfly","es":"mariposa","it":"farfalla"},{"ru":"жук","en":"beetle","es":"escarabajo","it":"scarabeo"},{"ru":"змея","en":"snake","es":"serpiente","it":"serpente"},{"ru":"ящерица","en":"lizard","es":"lagarto","it":"lucertola"},{"ru":"лягушка","en":"frog","es":"rana","it":"rana"},{"ru":"черепаха","en":"turtle","es":"tortuga","it":"tartaruga"},{"ru":"кролик","en":"rabbit","es":"conejo","it":"coniglio"},{"ru":"белка","en":"squirrel","es":"ardilla","it":"scoiattolo"},{"ru":"мышь","en":"mouse","es":"ratón","it":"topo"},{"ru":"крыса","en":"rat","es":"rata","it":"ratto"},{"ru":"лошадь","en":"horse","es":"caballo","it":"cavallo"},{"ru":"корова","en":"cow","es":"vaca","it":"mucca"},{"ru":"свинья","en":"pig","es":"cerdo","it":"maiale"},{"ru":"овца","en":"sheep","es":"oveja","it":"pecora"},{"ru":"коза","en":"goat","es":"cabra","it":"capra"},{"ru":"баран","en":"ram","es":"carnero","it":"montone"},{"ru":"петух","en":"rooster","es":"gallo","it":"gallo"},{"ru":"курица","en":"hen","es":"gallina","it":"gallina"},{"ru":"утка","en":"duck","es":"pato","it":"anatra"},{"ru":"гусь","en":"goose","es":"ganso","it":"oca"},{"ru":"индюк","en":"turkey","es":"pavo","it":"tacchino"},{"ru":"голубь","en":"pigeon","es":"paloma","it":"piccione"},{"ru":"ворона","en":"crow","es":"cuervo","it":"corvo"},{"ru":"сорока","en":"magpie","es":"urraca","it":"gazza"},{"ru":"ласточка","en":"swallow","es":"golondrina","it":"rondine"},{"ru":"жаворонок","en":"lark","es":"alondra","it":"allodola"},{"ru":"соловей","en":"nightingale","es":"ruiseñor","it":"usignolo"},{"ru":"синица","en":"tit","es":"carbonero","it":"cinciallegra"},{"ru":"воробей","en":"sparrow","es":"gorrión","it":"passero"},{"ru":"орёл","en":"eagle","es":"águila","it":"aquila"},{"ru":"сокол","en":"falcon","es":"halcón","it":"falco"},{"ru":"ястреб","en":"hawk","es":"azor","it":"sparviero"},{"ru":"сова","en":"owl","es":"búho","it":"gufo"},{"ru":"лебедь","en":"swan","es":"cisne","it":"cigno"},{"ru":"аист","en":"stork","es":"cigüeña","it":"cicogna"},{"ru":"цапля","en":"heron","es":"garza","it":"airone"},{"ru":"чайка","en":"gull","es":"gaviota","it":"gabbiano"},{"ru":"щука","en":"pike","es":"lucio","it":"luccio"},{"ru":"окунь","en":"perch","es":"perca","it":"persico"},{"ru":"карась","en":"carp","es":"carpa","it":"carpa"},{"ru":"лещ","en":"bream","es":"brema","it":"bream"},{"ru":"судак","en":"zander","es":"lucioperca","it":"sandre"},{"ru":"треска","en":"cod","es":"bacalao","it":"merluzzo"},{"ru":"сельдь","en":"herring","es":"arenque","it":"aringa"},{"ru":"килька","en":"sprat","es":"espadín","it":"spratto"},{"ru":"креветка","en":"shrimp","es":"camarón","it":"gambero"},{"ru":"краб","en":"crab","es":"cangrejo","it":"granchio"},{"ru":"осьминог","en":"octopus","es":"pulpo","it":"polpo"},{"ru":"кальмар","en":"squid","es":"calamar","it":"calamaro"},{"ru":"медуза","en":"jellyfish","es":"medusa","it":"medusa"},{"ru":"акула","en":"shark","es":"tiburón","it":"squalo"},{"ru":"кит","en":"whale","es":"ballena","it":"balena"},{"ru":"дельфин","en":"dolphin","es":"delfín","it":"delfino"},{"ru":"тюлень","en":"seal","es":"foca","it":"foca"},{"ru":"морж","en":"walrus","es":"morsa","it":"tricheco"},{"ru":"медведь","en":"bear","es":"oso","it":"orso"},{"ru":"волк","en":"wolf","es":"lobo","it":"lupo"},{"ru":"лиса","en":"fox","es":"zorro","it":"volpe"},{"ru":"заяц","en":"hare","es":"liebre","it":"lepre"},{"ru":"ёж","en":"hedgehog","es":"erizo","it":"riccio"},{"ru":"бобр","en":"beaver","es":"castor","it":"castoro"},{"ru":"выдра","en":"otter","es":"nutria","it":"lontra"},{"ru":"норка","en":"mink","es":"visón","it":"visone"},{"ru":"хорёк","en":"ferret","es":"hurón","it":"furetto"},{"ru":"барсук","en":"badger","es":"tejón","it":"tasso"},{"ru":"енот","en":"raccoon","es":"mapache","it":"procione"},{"ru":"лось","en":"elk","es":"alce","it":"alce"},{"ru":"олень","en":"deer","es":"ciervo","it":"cervo"},{"ru":"кабан","en":"boar","es":"jabalí","it":"cinghiale"},{"ru":"косуля","en":"roedeer","es":"corzo","it":"capriolo"},{"ru":"зубр","en":"bison","es":"bisonte","it":"bisonte"},{"ru":"зайца","en":"hareacc","es":"liebre","it":"lepre"},{"ru":"бурундук","en":"chipmunk","es":"ardilla","it":"tamia"},{"ru":"и","en":"and","es":"y","it":"e"},{"ru":"в","en":"in","es":"en","it":"in"},{"ru":"не","en":"not","es":"no","it":"non"},{"ru":"на","en":"on","es":"en","it":"su"},{"ru":"что","en":"what","es":"qué","it":"che"},{"ru":"с","en":"with","es":"con","it":"con"},{"ru":"как","en":"how","es":"como","it":"come"},{"ru":"по","en":"along","es":"por","it":"per"},{"ru":"из","en":"from","es":"de","it":"da"},{"ru":"у","en":"at","es":"a","it":"a"},{"ru":"за","en":"behind","es":"detrás","it":"dietro"},{"ru":"к","en":"to","es":"a","it":"a"},{"ru":"о","en":"about","es":"de","it":"su"},{"ru":"да","en":"yes","es":"sí","it":"sì"},{"ru":"но","en":"but","es":"pero","it":"ma"},{"ru":"а","en":"ah","es":"y","it":"e"},{"ru":"же","en":"then","es":"pues","it":"dunque"},{"ru":"ли","en":"whether","es":"si","it":"se"},{"ru":"бы","en":"would","es":"-","it":"-"},{"ru":"или","en":"or","es":"o","it":"o"},{"ru":"то","en":"that","es":"eso","it":"quello"},{"ru":"все","en":"all","es":"todo","it":"tutto"},{"ru":"ещё","en":"still","es":"aún","it":"ancora"},{"ru":"уже","en":"already","es":"ya","it":"già"},{"ru":"очень","en":"very","es":"muy","it":"molto"},{"ru":"можно","en":"may","es":"se","it":"si"},{"ru":"если","en":"if","es":"si","it":"se"},{"ru":"только","en":"only","es":"solo","it":"solo"},{"ru":"ему","en":"tohim","es":"él","it":"lui"},{"ru":"её","en":"toher","es":"ella","it":"lei"},{"ru":"им","en":"tothem","es":"les","it":"loro"},{"ru":"нас","en":"us","es":"nos","it":"noi"},{"ru":"вас","en":"youpl","es":"os","it":"voi"},{"ru":"их","en":"them","es":"ellos","it":"loro"},{"ru":"этот","en":"thism","es":"este","it":"questo"},{"ru":"эта","en":"thisf","es":"esta","it":"questa"},{"ru":"это","en":"thisn","es":"esto","it":"questo"},{"ru":"эти","en":"these","es":"estos","it":"questi"},{"ru":"один","en":"one","es":"uno","it":"uno"},{"ru":"два","en":"two","es":"dos","it":"due"},{"ru":"три","en":"three","es":"tres","it":"tre"},{"ru":"много","en":"many","es":"muchos","it":"molti"},{"ru":"мало","en":"few","es":"pocos","it":"pochi"},{"ru":"нет","en":"noex","es":"no","it":"no"},{"ru":"здесь","en":"here","es":"aquí","it":"qui"},{"ru":"там","en":"there","es":"allí","it":"là"},{"ru":"тут","en":"here2","es":"acá","it":"qua"},{"ru":"потом","en":"then2","es":"luego","it":"poi"},{"ru":"опять","en":"again","es":"otra","it":"ancora"},{"ru":"вновь","en":"anew","es":"nuevo","it":"nuovo"},{"ru":"вместе","en":"together","es":"juntos","it":"insieme"},{"ru":"назад","en":"back","es":"atrás","it":"indietro"},{"ru":"впереди","en":"ahead","es":"adelante","it":"avanti"},{"ru":"внутри","en":"inside","es":"dentro","it":"dentro"},{"ru":"вокруг","en":"around","es":"alrededor","it":"intorno"},{"ru":"вместо","en":"instead","es":"lugar","it":"invece"},{"ru":"сверху","en":"above","es":"encima","it":"sopra"},{"ru":"снизу","en":"below","es":"debajo","it":"sotto"},{"ru":"спереди","en":"infront","es":"delante","it":"davanti"},{"ru":"сзади","en":"behind2","es":"detrás","it":"dietro"},{"ru":"около","en":"near","es":"cerca","it":"vicino"},{"ru":"среди","en":"among","es":"entre","it":"fra"},{"ru":"между","en":"between","es":"entre","it":"tra"},{"ru":"через","en":"through","es":"vía","it":"attraverso"},{"ru":"без","en":"without","es":"sin","it":"senza"},{"ru":"при","en":"at2","es":"en","it":"a"},{"ru":"над","en":"over","es":"sobre","it":"sopra"},{"ru":"под","en":"under","es":"bajo","it":"sotto"},{"ru":"про","en":"about2","es":"sobre","it":"su"},{"ru":"для","en":"for","es":"para","it":"per"},{"ru":"от","en":"from","es":"de","it":"da"},{"ru":"до","en":"until","es":"hasta","it":"fino"},{"ru":"ради","en":"for2","es":"por","it":"per"},{"ru":"благодаря","en":"thanks","es":"gracias","it":"grazie"},{"ru":"вопреки","en":"despite","es":"pesar","it":"nonostante"},{"ru":"согласно","en":"according","es":"según","it":"secondo"},{"ru":"включая","en":"including","es":"incluyendo","it":"incluso"},{"ru":"исключая","en":"excluding","es":"excluyendo","it":"escluso"},{"ru":"насчёт","en":"about3","es":"acerca","it":"circa"},{"ru":"вроде","en":"like","es":"como","it":"come"},{"ru":"словно","en":"asif","es":"como si","it":"come se"},{"ru":"будто","en":"exactly","es":"exacto","it":"esattamente"},{"ru":"точно","en":"evenly","es":"justo","it":"pari"},{"ru":"ровно","en":"almost","es":"casi","it":"quasi"},{"ru":"почти","en":"barely","es":"apenas","it":"a malapena"},{"ru":"едва","en":"hardly","es":"apenas","it":"difficile"},{"ru":"вряд","en":"probably","es":"probable","it":"probabilmente"},{"ru":"наверное","en":"possibly","es":"posible","it":"possibilmente"},{"ru":"возможно","en":"likely","es":"probable","it":"probabile"},{"ru":"вероятно","en":"ofcourse","es":"claro","it":"certo"},{"ru":"конечно","en":"naturally","es":"natural","it":"naturalmente"},{"ru":"разумеется","en":"really","es":"realmente","it":"davvero"},{"ru":"действительно","en":"namely","es":"es decir","it":"cioè"},{"ru":"именно","en":"only2","es":"solo","it":"solo"},{"ru":"лишь","en":"exclusively","es":"exclusivo","it":"esclusivamente"},{"ru":"исключительно","en":"especially","es":"especial","it":"specialmente"},{"ru":"особенно","en":"main","es":"principal","it":"principale"},{"ru":"главное","en":"important","es":"importante","it":"importante"},{"ru":"важно","en":"needed","es":"necesario","it":"serve"},{"ru":"нужно","en":"must","es":"debe","it":"deve"},{"ru":"надо","en":"should","es":"debería","it":"dovrebbe"},{"ru":"следует","en":"ought","es":"conviene","it":"conviene"},{"ru":"мочь","en":"can","es":"puede","it":"può"},{"ru":"хотеть","en":"want","es":"quiere","it":"vuole"},{"ru":"думать","en":"think","es":"piensa","it":"pensa"},{"ru":"знать","en":"know","es":"sabe","it":"sa"},{"ru":"верить","en":"believe","es":"cree","it":"crede"},{"ru":"надеяться","en":"hopeh","es":"espera","it":"spera"},{"ru":"бояться","en":"fearh","es":"teme","it":"teme"},{"ru":"любить","en":"loveh","es":"ama","it":"ama"},{"ru":"ненавидеть","en":"hate","es":"odia","it":"odia"},{"ru":"помнить","en":"remember","es":"recuerda","it":"ricorda"},{"ru":"забывать","en":"forget","es":"olvida","it":"dimentica"},{"ru":"понимать","en":"understand","es":"entiende","it":"capisce"},{"ru":"объяснять","en":"explain","es":"explica","it":"spiega"},{"ru":"спрашивать","en":"ask","es":"pregunta","it":"chiede"},{"ru":"отвечать","en":"answer","es":"responde","it":"risponde"},{"ru":"молчать","en":"silent","es":"callar","it":"tacere"},{"ru":"кричать","en":"shout","es":"gritar","it":"gridare"}];
+
+      /** Только цифры 0–9 и знаки (без латиницы/кириллицы): одинаково для RU/EN/ES/IT, без смешения алфавитов. */
+      const SYM_ALIGNED = [
+        { ru: "012", en: "012", es: "012", it: "012" },
+        { ru: "123", en: "123", es: "123", it: "123" },
+        { ru: "456", en: "456", es: "456", it: "456" },
+        { ru: "789", en: "789", es: "789", it: "789" },
+        { ru: "42", en: "42", es: "42", it: "42" },
+        { ru: "2024", en: "2024", es: "2024", it: "2024" },
+        { ru: "3.14", en: "3.14", es: "3.14", it: "3.14" },
+        { ru: "100%", en: "100%", es: "100%", it: "100%" },
+        { ru: "50%", en: "50%", es: "50%", it: "50%" },
+        { ru: "1,2,3", en: "1,2,3", es: "1,2,3", it: "1,2,3" },
+        { ru: "1+2", en: "1+2", es: "1+2", it: "1+2" },
+        { ru: "9-1", en: "9-1", es: "9-1", it: "9-1" },
+        { ru: "2*3", en: "2*3", es: "2*3", it: "2*3" },
+        { ru: "8/2", en: "8/2", es: "8/2", it: "8/2" },
+        { ru: "7=7", en: "7=7", es: "7=7", it: "7=7" },
+        { ru: "(0)", en: "(0)", es: "(0)", it: "(0)" },
+        { ru: "[1]", en: "[1]", es: "[1]", it: "[1]" },
+        { ru: "{2}", en: "{2}", es: "{2}", it: "{2}" },
+        { ru: "$5", en: "$5", es: "$5", it: "$5" },
+        { ru: "#9", en: "#9", es: "#9", it: "#9" },
+        { ru: "0:0", en: "0:0", es: "0:0", it: "0:0" },
+        { ru: "1;2", en: "1;2", es: "1;2", it: "1;2" },
+        { ru: "?!", en: "?!", es: "?!", it: "?!" },
+        { ru: "!?", en: "!?", es: "!?", it: "!?" },
+        { ru: "...", en: "...", es: "...", it: "..." },
+        { ru: "::", en: "::", es: "::", it: "::" },
+        { ru: "&&", en: "&&", es: "&&", it: "&&" },
+        { ru: "||", en: "||", es: "||", it: "||" },
+        { ru: "^^", en: "^^", es: "^^", it: "^^" },
+        { ru: "~~", en: "~~", es: "~~", it: "~~" },
+        { ru: "@#", en: "@#", es: "@#", it: "@#" },
+        { ru: "!@#", en: "!@#", es: "!@#", it: "!@#" },
+        { ru: "+*", en: "+*", es: "+*", it: "+*" },
+        { ru: "-_", en: "-_", es: "-_", it: "-_" },
+        { ru: "\\|", en: "\\|", es: "\\|", it: "\\|" },
+        { ru: "`~", en: "`~", es: "`~", it: "`~" },
+        { ru: "'\"", en: "'\"", es: "'\"", it: "'\"" },
+        { ru: "\"'", en: "\"'", es: "\"'", it: "\"'" },
+      ];
 
       const wrap = document.getElementById("keyboard-wrap");
       const keyboardEl = document.getElementById("keyboard");
@@ -877,7 +1225,9 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
       const uiLangSelect = document.getElementById("ui-lang");
 
       const UI_LANG_KEY = "bk_ui_lang";
+      const MIX_SYM_KEY = "bk_mix_symbols";
       const LANG_CODES = ["ru", "en", "es", "it"];
+      const mixSymbolsEl = document.getElementById("bk-mix-symbols");
       const i18nEl = {
         h1: document.getElementById("i18n-h1"),
         subtitle: document.getElementById("i18n-subtitle"),
@@ -885,7 +1235,8 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
         practiceTitle: document.getElementById("i18n-practice-title"),
         wordLangLabel: document.getElementById("i18n-word-lang-label"),
         trainSeg: document.getElementById("train-seg"),
-        legend: document.getElementById("i18n-legend"),
+        keyboardHomeHint: document.getElementById("i18n-keyboard-home-hint"),
+        wordHoverHint: document.getElementById("i18n-word-hint"),
         keyboardTitle: document.getElementById("i18n-keyboard-title"),
         statsTitle: document.getElementById("i18n-stats-title"),
         historyHeading: document.getElementById("i18n-history-heading"),
@@ -895,13 +1246,16 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
         thTime: document.getElementById("i18n-th-time"),
         thWrong: document.getElementById("i18n-th-wrong"),
         thResult: document.getElementById("i18n-th-result"),
+        fingerLegendTitle: document.getElementById("i18n-finger-legend-title"),
+        fingerLegendGrid: document.getElementById("i18n-finger-legend-grid"),
+        mixSymbolsLabel: document.getElementById("i18n-mix-symbols-label"),
       };
       const STR = {
         ru: {
           pageTitle: "Слепая печать онлайн — тренажёр: RU, EN, ES, IT",
           h1: "Слепая печать — тренажёр онлайн",
           subtitle:
-            'За раз — <strong>5–10 слов</strong> на одном языке; набор слов совпадает по смыслу на RU/EN/ES/IT (переводы). Раскладка ОС = языку слов. Наведите на слово — подсказка с переводами; на экране — удержание. Клавиатура и статистика ниже.',
+            'За раз — <strong>10–15 слов</strong> (через пробел). По желанию включите галочку ниже: в фразу добавятся 1–3 фрагмента только из <strong>цифр 0–9 и знаков</strong> (без смешения алфавитов). Слова совпадают по смыслу на RU/EN/ES/IT. Раскладка ОС = языку слов. Наведите на сегмент — подсказка; на таче — удержание. Клавиатура и статистика ниже.',
           uiLangLabel: "Язык интерфейса",
           practiceTitle: "Тренировка",
           wordLangLabel: "Язык слов",
@@ -911,9 +1265,13 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           trainEs: "Испанские",
           trainIt: "Итальянские",
           practiceAria: "Наберите фразу из слов",
-          newPhrase: "Новая фраза (5–10 слов)",
-          legend:
-            '<span><i class="dot home"></i> Метки на F и J (А и О на русской раскладке)</span> <span style="color:var(--key-dim)">Слова на всех языках — одни и те же смыслы (переводы). Наведите на слово или удерживайте на экране.</span>',
+          newPhrase: "Новая фраза (10–15 слов)",
+          phraseLengthRange: "(10–15)",
+          mixSymbolsLabel: "Цифры и знаки",
+          keyboardHomeHint:
+            '<span><i class="dot home"></i> Метки на F и J (А и О на русской раскладке)</span>',
+          wordHoverHint:
+            "Слова на всех языках — одни и те же смыслы (переводы). Наведите на слово или удерживайте на экране.",
           statsTitle: "Статистика",
           last10: "Последние 100 попыток",
           historyAria: "История",
@@ -947,12 +1305,22 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           doneFlawed: "Фраза набрана. Ошибок по клавишам: {w}. Время: {t}.",
           keyboardSectionTitle: "Схема клавиатуры",
           emptyWordLine: "—",
+          fingerLegendTitle: "Цвета клавиш по пальцам (классическая схема)",
+          fingerLp: "Левый мизинец",
+          fingerLr: "Левый безымянный",
+          fingerLm: "Левый средний",
+          fingerLi: "Левый указательный",
+          fingerRi: "Правый указательный",
+          fingerRm: "Правый средний",
+          fingerRr: "Правый безымянный",
+          fingerRp: "Правый мизинец",
+          fingerTh: "Большие пальцы (пробел)",
         },
         en: {
           pageTitle: "Touch typing trainer — RU, EN, ES, IT | Browser",
           h1: "Blind typing — online trainer",
           subtitle:
-            'Each round: <strong>5–10 words</strong> in one language; word sets are aligned translations across RU/EN/ES/IT. Match OS layout to the word language. Hover a word (long-press on touch) for other languages. Keyboard and stats below.',
+            'Each round: <strong>10–15 words</strong> (space-separated). Optionally check the box below to add 1–3 chunks of <strong>digits and punctuation only</strong> (no mixed alphabets). Word meanings align across RU/EN/ES/IT. Match OS layout to the word language. Hover a segment (long-press on touch) for translations. Keyboard and stats below.',
           uiLangLabel: "Interface language",
           practiceTitle: "Practice",
           wordLangLabel: "Word language",
@@ -962,9 +1330,13 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           trainEs: "Spanish",
           trainIt: "Italian",
           practiceAria: "Type the phrase word by word",
-          newPhrase: "New phrase (5–10 words)",
-          legend:
-            '<span><i class="dot home"></i> Home bumps on F and J (А and О on Russian layout)</span> <span style="color:var(--key-dim)">Same meanings in all languages. Hover a word or long-press on touch for translations.</span>',
+          newPhrase: "New phrase (10–15 words)",
+          phraseLengthRange: "(10–15)",
+          mixSymbolsLabel: "Digits & symbols",
+          keyboardHomeHint:
+            '<span><i class="dot home"></i> Home bumps on F and J (А and О on Russian layout)</span>',
+          wordHoverHint:
+            "Same meanings in all languages. Hover a word or long-press on touch for translations.",
           statsTitle: "Statistics",
           last10: "Last 100 attempts",
           historyAria: "History",
@@ -998,12 +1370,22 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           doneFlawed: "Phrase complete. Wrong key presses: {w}. Time: {t}.",
           keyboardSectionTitle: "Keyboard layout",
           emptyWordLine: "—",
+          fingerLegendTitle: "Key colors by finger (standard touch typing)",
+          fingerLp: "Left pinky",
+          fingerLr: "Left ring",
+          fingerLm: "Left middle",
+          fingerLi: "Left index",
+          fingerRi: "Right index",
+          fingerRm: "Right middle",
+          fingerRr: "Right ring",
+          fingerRp: "Right pinky",
+          fingerTh: "Thumbs (space bar)",
         },
         es: {
           pageTitle: "Mecanografía — entrenador RU, EN, ES, IT",
           h1: "Mecanografía — entrenador en línea",
           subtitle:
-            'Cada ronda: <strong>de 5 a 10 palabras</strong> en un solo idioma (ruso, inglés, español o italiano), separadas por espacio. El teclado del sistema debe coincidir con el idioma (español/italiano: QWERTY con tildes). El teclado en pantalla es ayuda. Estadísticas abajo.',
+            'Cada ronda: <strong>de 10 a 15 palabras</strong>. Marca la casilla para añadir 1–3 fragmentos solo de <strong>cifras y signos</strong>. Las palabras coinciden entre idiomas. El teclado del sistema = idioma de las palabras. Pasa el ratón o mantén pulsado para traducciones. Estadísticas abajo.',
           uiLangLabel: "Idioma de la interfaz",
           practiceTitle: "Práctica",
           wordLangLabel: "Idioma de las palabras",
@@ -1013,9 +1395,13 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           trainEs: "Españolas",
           trainIt: "Italianas",
           practiceAria: "Escribe la frase",
-          newPhrase: "Nueva frase (5–10 palabras)",
-          legend:
-            '<span><i class="dot home"></i> Marcas en F y J (А y О en teclado ruso)</span> <span style="color:var(--key-dim)">Mismos significados en todos los idiomas. Pasa el ratón o mantén pulsado en pantalla.</span>',
+          newPhrase: "Nueva frase (10–15 palabras)",
+          phraseLengthRange: "(10–15)",
+          mixSymbolsLabel: "Cifras y signos",
+          keyboardHomeHint:
+            '<span><i class="dot home"></i> Marcas en F y J (А y О en teclado ruso)</span>',
+          wordHoverHint:
+            "Mismos significados en todos los idiomas. Pasa el ratón o mantén pulsado en pantalla.",
           statsTitle: "Estadísticas",
           last10: "Últimos 100 intentos",
           historyAria: "Historial",
@@ -1049,12 +1435,22 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           doneFlawed: "Frase terminada. Pulsaciones erróneas: {w}. Tiempo: {t}.",
           keyboardSectionTitle: "Teclado de referencia",
           emptyWordLine: "—",
+          fingerLegendTitle: "Colores por dedo (mecanografía estándar)",
+          fingerLp: "Meñique izquierdo",
+          fingerLr: "Anular izquierdo",
+          fingerLm: "Medio izquierdo",
+          fingerLi: "Índice izquierdo",
+          fingerRi: "Índice derecho",
+          fingerRm: "Medio derecho",
+          fingerRr: "Anular derecho",
+          fingerRp: "Meñique derecho",
+          fingerTh: "Pulgares (barra espaciadora)",
         },
         it: {
           pageTitle: "Dattilografia — allenatore RU, EN, ES, IT",
           h1: "Dattilografia — allenatore online",
           subtitle:
-            'Ogni turno: <strong>da 5 a 10 parole</strong> in una sola lingua (russo, inglese, spagnolo o italiano), separate da spazio. La tastiera di sistema deve corrispondere alla lingua delle parole (ES/IT: QWERTY con accenti). La tastiera a schermo è una guida. Statistiche in basso.',
+            'Ogni turno: <strong>da 10 a 15 parole</strong>. Spunta la casella per aggiungere 1–3 frammenti solo di <strong>cifre e segni</strong>. Le parole sono allineate tra le lingue. La tastiera di sistema = lingua delle parole. Passa il mouse o tieni premuto per le traduzioni. Statistiche in basso.',
           uiLangLabel: "Lingua dell’interfaccia",
           practiceTitle: "Allenamento",
           wordLangLabel: "Lingua delle parole",
@@ -1064,9 +1460,13 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           trainEs: "Spagnole",
           trainIt: "Italiane",
           practiceAria: "Digita la frase",
-          newPhrase: "Nuova frase (5–10 parole)",
-          legend:
-            '<span><i class="dot home"></i> Rilievi su F e J (А e О sulla tastiera russa)</span> <span style="color:var(--key-dim)">Stessi significati in tutte le lingue. Passa il mouse o tieni premuto sul touch.</span>',
+          newPhrase: "Nuova frase (10–15 parole)",
+          phraseLengthRange: "(10–15)",
+          mixSymbolsLabel: "Cifre e segni",
+          keyboardHomeHint:
+            '<span><i class="dot home"></i> Rilievi su F e J (А e О sulla tastiera russa)</span>',
+          wordHoverHint:
+            "Stessi significati in tutte le lingue. Passa il mouse o tieni premuto sul touch.",
           statsTitle: "Statistiche",
           last10: "Ultimi 100 tentativi",
           historyAria: "Cronologia",
@@ -1100,12 +1500,53 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           doneFlawed: "Frase completata. Battiture errate: {w}. Tempo: {t}.",
           keyboardSectionTitle: "Schema tastiera",
           emptyWordLine: "—",
+          fingerLegendTitle: "Colori per dito (dattilografia classica)",
+          fingerLp: "Mignolo sinistro",
+          fingerLr: "Anulare sinistro",
+          fingerLm: "Medio sinistro",
+          fingerLi: "Indice sinistro",
+          fingerRi: "Indice destro",
+          fingerRm: "Medio destro",
+          fingerRr: "Anulare destro",
+          fingerRp: "Mignolo destro",
+          fingerTh: "Pollici (barra spaziatrice)",
         },
       };
 
       let uiLang = "en";
       function t(key) {
         return (STR[uiLang] && STR[uiLang][key]) || STR.en[key] || STR.ru[key] || key;
+      }
+
+      function updateFingerLegend() {
+        i18nEl.fingerLegendTitle.textContent = t("fingerLegendTitle");
+        const grid = i18nEl.fingerLegendGrid;
+        grid.innerHTML = "";
+        const rows = [
+          ["lp", "fingerLp"],
+          ["lr", "fingerLr"],
+          ["lm", "fingerLm"],
+          ["li", "fingerLi"],
+          ["ri", "fingerRi"],
+          ["rm", "fingerRm"],
+          ["rr", "fingerRr"],
+          ["rp", "fingerRp"],
+          ["th", "fingerTh"],
+        ];
+        for (let i = 0; i < rows.length; i++) {
+          const fid = rows[i][0];
+          const tk = rows[i][1];
+          const item = document.createElement("span");
+          item.className = "finger-legend-item";
+          const dot = document.createElement("i");
+          dot.className = "finger-dot finger-" + fid;
+          dot.setAttribute("aria-hidden", "true");
+          const lab = document.createElement("span");
+          lab.textContent = t(tk);
+          item.appendChild(dot);
+          item.appendChild(lab);
+          grid.appendChild(item);
+        }
       }
 
       function applyUILang() {
@@ -1127,7 +1568,10 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
         btnTrainIt.textContent = t("trainIt");
         practice.setAttribute("aria-label", t("practiceAria"));
         btnNewWord.textContent = t("newPhrase");
-        i18nEl.legend.innerHTML = t("legend");
+        i18nEl.mixSymbolsLabel.textContent = t("mixSymbolsLabel");
+        mixSymbolsEl.setAttribute("aria-label", t("mixSymbolsLabel"));
+        i18nEl.keyboardHomeHint.innerHTML = t("keyboardHomeHint");
+        i18nEl.wordHoverHint.textContent = t("wordHoverHint");
         i18nEl.keyboardTitle.textContent = t("keyboardSectionTitle");
         i18nEl.statsTitle.textContent = t("statsTitle");
         i18nEl.historyHeading.textContent = t("last10");
@@ -1137,6 +1581,7 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
         i18nEl.thTime.textContent = t("thTime");
         i18nEl.thWrong.textContent = t("thWrong");
         i18nEl.thResult.textContent = t("thResult");
+        updateFingerLegend();
         renderWordLine();
         updateSessionStats();
         renderGlobalStats();
@@ -1272,39 +1717,86 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
         }
         return idx;
       }
+      function shuffleInPlace(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const t = arr[i];
+          arr[i] = arr[j];
+          arr[j] = t;
+        }
+        return arr;
+      }
+      let _letterRe = null;
+      function isUnicodeLetter(ch) {
+        if (ch.length !== 1) return false;
+        if (_letterRe == null) {
+          try {
+            _letterRe = new RegExp("\\p{L}", "u");
+          } catch (e) {
+            _letterRe = /[a-zA-Zа-яА-ЯёЁ]/;
+          }
+        }
+        return _letterRe.test(ch);
+      }
       function pickPhrase() {
-        const n = 5 + Math.floor(Math.random() * 6);
+        const n = 10 + Math.floor(Math.random() * 6);
+        const capSym = Math.max(0, n - 2);
+        let nSym = 0;
+        if (mixSymbolsEl.checked && SYM_ALIGNED.length) {
+          nSym = Math.min(1 + Math.floor(Math.random() * 3), capSym);
+        }
+        const nWords = n - nSym;
         const indices = alignedIndicesForLang();
+
         if (!indices.length) {
           const ru = ["один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять"];
           const en = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
           const es = ["uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
           const it = ["uno", "due", "tre", "quattro", "cinque", "sei", "sette", "otto", "nove", "dieci"];
-          phraseMeta = ru.slice(0, n).map(function (r, i) {
-            return { ru: r, en: en[i], es: es[i], it: it[i] };
-          });
-          return phraseMeta
+          const base = [];
+          for (let w = 0; w < nWords; w++) {
+            const i = Math.floor(Math.random() * ru.length);
+            base.push({ ru: ru[i], en: en[i], es: es[i], it: it[i] });
+          }
+          const segments = base.slice();
+          const symPool = SYM_ALIGNED.slice();
+          for (let s = 0; s < nSym && symPool.length; s++) {
+            const j = Math.floor(Math.random() * symPool.length);
+            segments.push(symPool.splice(j, 1)[0]);
+          }
+          shuffleInPlace(segments);
+          phraseMeta = segments;
+          return segments
             .map(function (row) {
               return row[trainLang];
             })
             .join(" ");
         }
+
         const pool = indices.slice();
-        for (let i = pool.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          const tmp = pool[i];
-          pool[i] = pool[j];
-          pool[j] = tmp;
+        shuffleInPlace(pool);
+        const wordMetas = [];
+        for (let p = 0; p < pool.length && wordMetas.length < nWords; p++) {
+          wordMetas.push(WORDS_ALIGNED[pool[p]]);
         }
-        const pickedIdx = [];
-        for (let p = 0; p < pool.length && pickedIdx.length < n; p++) pickedIdx.push(pool[p]);
-        while (pickedIdx.length < n) pickedIdx.push(indices[Math.floor(Math.random() * indices.length)]);
-        phraseMeta = pickedIdx.map(function (i) {
-          return WORDS_ALIGNED[i];
-        });
-        return pickedIdx
-          .map(function (i) {
-            return WORDS_ALIGNED[i][trainLang];
+        while (wordMetas.length < nWords) {
+          const idx = indices[Math.floor(Math.random() * indices.length)];
+          wordMetas.push(WORDS_ALIGNED[idx]);
+        }
+
+        const symPick = [];
+        const symPool2 = SYM_ALIGNED.slice();
+        for (let s = 0; s < nSym && symPool2.length; s++) {
+          const j = Math.floor(Math.random() * symPool2.length);
+          symPick.push(symPool2.splice(j, 1)[0]);
+        }
+
+        const segments = wordMetas.concat(symPick);
+        shuffleInPlace(segments);
+        phraseMeta = segments;
+        return segments
+          .map(function (row) {
+            return row[trainLang];
           })
           .join(" ");
       }
@@ -1366,7 +1858,9 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
           t("sessionWords") +
           ": <strong>" +
           wordCountPhrase(currentWord) +
-          "</strong> (5–10)</span>" +
+          "</strong> " +
+          t("phraseLengthRange") +
+          "</span>" +
           "<span>" +
           t("sessionChars") +
           ": <strong>" +
@@ -1526,7 +2020,9 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
       }
       function charMatch(key, expected) {
         if (expected === " ") return key === " ";
-        return key.length === 1 && key.toLowerCase() === expected.toLowerCase();
+        if (key.length !== 1) return false;
+        if (isUnicodeLetter(expected)) return key.toLowerCase() === expected.toLowerCase();
+        return key === expected;
       }
       practice.addEventListener("keydown", function (e) {
         if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -1599,6 +2095,70 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
       /** @type {Map<string, HTMLElement>} */
       const codeToEl = new Map();
 
+      /** Classic QWERTY touch-typing zones by KeyboardEvent.code (same physical keys for JCUKEN). */
+      const FINGER_BY_CODE = {
+        Backquote: "lp",
+        Digit1: "lp",
+        Digit2: "lp",
+        Tab: "lp",
+        CapsLock: "lp",
+        KeyQ: "lp",
+        KeyA: "lp",
+        KeyZ: "lp",
+        ShiftLeft: "lp",
+        ControlLeft: "lp",
+        MetaLeft: "lp",
+        AltLeft: "lp",
+        Digit3: "lr",
+        KeyW: "lr",
+        KeyS: "lr",
+        KeyX: "lr",
+        Digit4: "lm",
+        KeyE: "lm",
+        KeyD: "lm",
+        KeyC: "lm",
+        Digit5: "li",
+        Digit6: "li",
+        KeyR: "li",
+        KeyT: "li",
+        KeyF: "li",
+        KeyG: "li",
+        KeyV: "li",
+        KeyB: "li",
+        Digit7: "ri",
+        Digit8: "ri",
+        KeyY: "ri",
+        KeyU: "ri",
+        KeyH: "ri",
+        KeyJ: "ri",
+        KeyN: "ri",
+        KeyM: "ri",
+        Digit9: "rm",
+        KeyI: "rm",
+        KeyK: "rm",
+        Comma: "rm",
+        Digit0: "rr",
+        Minus: "rr",
+        Equal: "rr",
+        KeyO: "rr",
+        KeyL: "rr",
+        Period: "rr",
+        Backspace: "rp",
+        KeyP: "rp",
+        BracketLeft: "rp",
+        BracketRight: "rp",
+        Backslash: "rp",
+        Semicolon: "rp",
+        Quote: "rp",
+        Enter: "rp",
+        Slash: "rp",
+        ShiftRight: "rp",
+        AltRight: "rp",
+        ContextMenu: "rp",
+        ControlRight: "rp",
+        Space: "th",
+      };
+
       function render(layoutKey) {
         const layout = LAYOUTS[layoutKey];
         keyboardEl.innerHTML = "";
@@ -1614,6 +2174,8 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
             const keyEl = document.createElement("div");
             keyEl.className = "key w-" + k.w + (k.home ? " home-pos" : "");
             keyEl.dataset.code = k.code;
+            const fingerId = FINGER_BY_CODE[k.code];
+            if (fingerId) keyEl.classList.add("finger-" + fingerId);
             if (k.enOnly) keyEl.classList.add("key-en-only");
             if (k.ruOnly) keyEl.classList.add("key-ru-only");
 
@@ -1668,6 +2230,16 @@ const WORDS_ALIGNED = [{"ru":"дом","en":"house","es":"casa","it":"casa"},{"ru
         const main = (navigator.language || navigator.userLanguage || "").split("-")[0].toLowerCase();
         return LANG_CODES.includes(main) ? main : "en";
       }
+      try {
+        mixSymbolsEl.checked = localStorage.getItem(MIX_SYM_KEY) === "1";
+      } catch (e) {}
+      mixSymbolsEl.addEventListener("change", function () {
+        try {
+          localStorage.setItem(MIX_SYM_KEY, mixSymbolsEl.checked ? "1" : "0");
+        } catch (e) {}
+        newRound();
+        practice.focus();
+      });
       try {
         const savedUi = localStorage.getItem(UI_LANG_KEY);
         if (LANG_CODES.includes(savedUi)) {
